@@ -5,7 +5,8 @@ const router=Router();
 //usuarios 
 const usuarios = [
     'joani',
-    'joshelyn'
+    'joshelyn',
+    'josue'
 ]
 //esto es la primera ruta
 //la ruta seria http://localhost:8080/api/users/
