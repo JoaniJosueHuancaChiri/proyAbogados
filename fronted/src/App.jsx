@@ -1,5 +1,11 @@
+import "./App.css"; 
 import { useEffect,useState } from "react"
 import axios from "axios"
+
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import LandingPage from './pages/LandingPage'; // página actual
+import Login from './pages/Login'
+
 function App() {
   const [Data, setData] = useState([])
   useEffect(() => {
@@ -9,13 +15,16 @@ function App() {
       data.data
       setData(data.data)
     }
-    getUsers()
+    //getUsers()
   }, [])
   if (Data.length === 0) {
     return (
-      <>
-        cargando data ...
-      </>
+      <Router>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<Login />} />
+        </Routes>
+      </Router>
     )
   }
   return (
