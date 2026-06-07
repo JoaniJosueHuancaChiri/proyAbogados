@@ -24,3 +24,4 @@ router.get('/2',(req,res)=>{
     })
 })
 module.exports=router;
+
