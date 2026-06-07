@@ -1,35 +1,47 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 
 const NavbarDashboard = () => {
-  const navigate = useNavigate();
+  const handleToggle = (e) => {
+    e.preventDefault();
+    // Alterna la clase nativa de Vali Admin en el body
+    document.body.classList.toggle('sidenav-toggled');
+  };
 
   return (
-
-    <header className="app-header fixed top-0 left-0 w-full h-16 bg-[#009688] flex items-center justify-between px-4 z-50 shadow-md text-white">
-      {/* Logotipo de Vali Admin */}
-      <a className="app-header__logo font-serif tracking-wider text-xl font-bold px-4" href="/dashboard">
-        Vali
-      </a>
+    <header className="app-header">
+      {/* Logo de la marca */}
+      <a className="app-header__logo font-serif" href="/dashboard">Vali</a>
       
-
-      <button 
-        className="app-sidebar__toggle p-3 hover:bg-[#00796b] rounded transition-colors" 
+      {/* Botón Hamburguesa Oficial (Debe ir vacío por dentro) */}
+      <a 
+        className="app-sidebar__toggle" 
+        href="#" 
+        onClick={handleToggle}
         aria-label="Hide Sidebar"
-      >
-        <i className="fa-solid fa-bars text-lg"></i>
-      </button>
-
-
-      <ul className="app-nav flex items-center gap-2 pr-4">
-        <li className="dropdown">
-          <button 
-            onClick={() => navigate('/')} 
-            className="app-nav__item p-2 hover:bg-[#00796b] rounded flex items-center gap-2 transition-colors text-sm font-medium"
-            title="Cerrar Sesión"
-          >
-            <i className="fa-solid fa-sign-out-alt"></i> Salir
+      ></a>
+      
+      {/* Menú derecho de la Navbar */}
+      <ul className="app-nav">
+        {/* Buscador */}
+        <li className="app-search">
+          <input className="app-search__input" type="search" placeholder="Search" />
+          <button className="app-search__button" type="button">
+            <i className="fa fa-search"></i>
           </button>
+        </li>
+        
+        {/* Notificaciones */}
+        <li className="dropdown">
+          <a className="app-nav__item" href="#" data-toggle="dropdown" aria-label="Show notifications">
+            <i className="fa fa-bell-o fa-lg"></i>
+          </a>
+        </li>
+        
+        {/* Menú de Usuario */}
+        <li className="dropdown">
+          <a className="app-nav__item" href="#" data-toggle="dropdown" aria-label="Open Profile Menu">
+            <i className="fa fa-user fa-lg"></i>
+          </a>
         </li>
       </ul>
     </header>

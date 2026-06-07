@@ -1,43 +1,67 @@
-import React from 'react';
-import NavbarDashboard from '../components/dashboard/NavbarDashboard';
-import Sidebar from '../components/dashboard/Sidebar';
+import React from "react";
+import NavbarDashboard from "../components/dashboard/NavbarDashboard";
+import Sidebar from "../components/dashboard/Sidebar";
 
 const Dashboard = () => {
+  // Forzamos a que el body de la página tenga la clase necesaria para Vali Admin
+  // pages/Dashboard.jsx
+
+  React.useEffect(() => {
+    // 1. Añadimos las clases oficiales de Vali Admin
+    document.body.classList.add("app", "sidebar-mini");
+
+    // 2. TRUCO DE AISLAMIENTO: Marcamos que estamos en el dashboard
+    document.body.setAttribute("data-theme", "vali"); // Cambia el tema para que DaisyUI no interfiera
+
+    return () => {
+      // Limpieza al salir de la página del Dashboard
+      document.body.classList.remove("app", "sidebar-mini");
+      document.body.removeAttribute("data-theme");
+    };
+  }, []);
+
   return (
-    <div className="app sidebar-mini">
-      {/* 1. Barra superior de Vali Admin */}
+    <div className="flex flex-col min-h-screen bg-gray-100">
+      {/* 1. Componente Barra Superior */}
       <NavbarDashboard />
-      
-      {/* 2. Menú lateral izquierdo */}
+
+      {/* 2. Componente Barra Lateral */}
       <Sidebar />
 
-      {/* 3. Área de contenido dinámico */}
-      <main className="app-content pl-64 pt-20 p-6 bg-[#f4f5f7] min-h-screen">
-        <div className="app-title flex justify-between items-center mb-6 p-4 bg-white rounded shadow-sm border border-slate-100">
+      {/* 3. Contenedor del Contenido Principal (Estilo oficial de Vali) */}
+      <main className="app-content pt-20 pl-64 p-6 transition-all duration-300">
+        <div className="app-title flex justify-between items-center bg-white p-4 shadow-sm mb-6 rounded">
           <div>
-            <h1 className="text-xl font-bold text-slate-800">
-              <i className="fa-solid fa-gauge mr-2"></i> Panel de Control Jurídico
+            <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
+              <i className="fa-solid fa-gauge-high text-primary"></i> Panel de
+              Control Jurídico
             </h1>
-            <p className="text-xs text-slate-500 mt-1">Bienvenido al sistema de administración de expedientes</p>
+            <p className="text-slate-500 text-sm italic">
+              Bienvenido al sistema de administración de expedientes
+            </p>
           </div>
         </div>
 
-        {/* Tarjetas de reportes rápidos */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white p-6 rounded shadow-sm border-l-4 border-[#009688] flex justify-between items-center">
+        {/* Tus Tarjetas de Casos Activos y Clientes Totales */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-white border-l-4 border-teal-500 p-6 rounded shadow flex items-center justify-between">
             <div>
-              <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Casos Activos</h4>
-              <p className="text-3xl font-black text-slate-800 mt-2">24</p>
+              <h2 className="text-sm font-semibold text-slate-400 uppercase">
+                Casos Activos
+              </h2>
+              <p className="text-3xl font-bold text-slate-700">24</p>
             </div>
-            <div className="text-3xl text-slate-300"><i className="fa-solid fa-briefcase"></i></div>
+            <i className="fa-solid fa-briefcase text-slate-300 text-4xl"></i>
           </div>
-          
-          <div className="bg-white p-6 rounded shadow-sm border-l-4 border-blue-500 flex justify-between items-center">
+
+          <div className="bg-white border-l-4 border-blue-500 p-6 rounded shadow flex items-center justify-between">
             <div>
-              <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Clientes Totales</h4>
-              <p className="text-3xl font-black text-slate-800 mt-2">142</p>
+              <h2 className="text-sm font-semibold text-slate-400 uppercase">
+                Clientes Totales
+              </h2>
+              <p className="text-3xl font-bold text-slate-700">142</p>
             </div>
-            <div className="text-3xl text-slate-300"><i className="fa-solid fa-users"></i></div>
+            <i className="fa-solid fa-users text-slate-300 text-4xl"></i>
           </div>
         </div>
       </main>

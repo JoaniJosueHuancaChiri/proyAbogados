@@ -78,7 +78,7 @@ const LandingPage = () => {
     const [servicioActivo, setServicioActivo] = useState(null);
     
   return (
-    <div className="min-h-screen bg-base-100 font-sans">
+    <div className="tailwind-scope bg-base-100 text-slate-800">
       {/* NAVBAR RESPONSIVO CON DRAWER */}
       <div className="drawer">
         <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
