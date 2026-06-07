@@ -1,11 +1,17 @@
-const express = require("express");
-const router=require("./router/users");
-const cors= require("cors")
+import express from 'express';
+import cors from 'cors';
+import usuarioRutas from './rutas/usuarioRutas.js'; // 👈 Fíjate bien en el punto y la barra './'
+
 const app = express();
-app.use(cors())
 
-app.use('/api/users',router);
+// MIDDLEWARES
+app.use(cors());
+app.use(express.json());
 
+// RUTAS BASE
+app.use('/api/usuarios', usuarioRutas);
+
+// LEVANTAR SERVIDOR
 app.listen(8080, () => {
-    console.log("servidor se levanto correctamente en el puerto 8080")
-})
+    console.log("Servidor se levantó correctamente en el puerto 8080");
+});

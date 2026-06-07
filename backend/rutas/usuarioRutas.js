@@ -1,10 +1,10 @@
-// 1. Importamos la función que acabamos de corregir en el CONTROLADOR
-import { registrarUsuario } from "../controladores/usuarioControlador.js";
+// ❌ REVISIÓN: Si tu archivo está así, hay un choque de rutas:
+import { registrarUsuario, loginUsuario } from "../controladores/usuarioControlador.js";
 import express from 'express';
 
 const rutas = express.Router();
 
-// 2. Apuntamos al controlador
-rutas.post('/', registrarUsuario);
+rutas.post('/', registrarUsuario); // 👈 Esto maneja: POST http://localhost:8080/api/usuarios/
+rutas.post('/login', loginUsuario); // 👈 Esto maneja: POST http://localhost:8080/api/usuarios/login
 
 export default rutas;
