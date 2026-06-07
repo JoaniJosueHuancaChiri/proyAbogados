@@ -1,8 +1,7 @@
-import React, { useState } from "react"; 
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import ServiceModal from "../components/ServiceModal";
 import AbogadoCard from "../components/AbogadoCard";
-
 
 // servicios
 const serviciosData = [
@@ -75,8 +74,8 @@ const equipoData = [
 ];
 
 const LandingPage = () => {
-    const [servicioActivo, setServicioActivo] = useState(null);
-    
+  const [servicioActivo, setServicioActivo] = useState(null);
+
   return (
     <div className="tailwind-scope bg-base-100 text-slate-800">
       {/* NAVBAR RESPONSIVO CON DRAWER */}
@@ -146,9 +145,7 @@ const LandingPage = () => {
               <Link
                 to="/login"
                 className="btn btn-primary btn-sm md:btn-md shadow-md"
-              >
-                Acceso
-              </Link>
+              >Acceso</Link>
             </div>
           </div>
         </div>

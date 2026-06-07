@@ -3,9 +3,9 @@ import bcrypt from 'bcrypt';
 
 export const insertarUsuarioConRol = async (datosUsuario) => {
     const {
-        // Quitamos "usuario" de aquí porque ahora lo generaremos adentro
         password, tipoUsuario, nombre, paterno, materno, ci, 
         fechaNacimiento, genero, celular, token, fechaCreacion,
+        estado,
         rpa, especialidad, universidad,
         direccion, estadoCivil, ocupacion
     } = datosUsuario;
@@ -15,27 +15,29 @@ export const insertarUsuarioConRol = async (datosUsuario) => {
         await conexion.beginTransaction();
 
         // 1. GENERAR EL USUARIO AUTOMÁTICAMENTE
-        // Tomamos la primera letra de cada campo y la juntamos con el CI
         const inicialPaterno = paterno ? paterno.trim().charAt(0) : '';
         const inicialMaterno = materno ? materno.trim().charAt(0) : '';
         const inicialNombre = nombre ? nombre.trim().charAt(0) : '';
-        const limpiaCI = ci.trim(); // Quitamos espacios en blanco si tuviera
+        const limpiaCI = ci.trim();
 
-        // Armamos la cadena: ej. "lmn1234567" y lo pasamos a minúsculas para estandarizar
         const usuarioGenerado = `${inicialPaterno}${inicialMaterno}${inicialNombre}${limpiaCI}`.toUpperCase();
 
         // 2. HASHEAR LA CONTRASEÑA
         const passwordHasheado = await bcrypt.hash(password, 10);
 
-        // Paso A: Insertar en la tabla PADRE (usando usuarioGenerado y passwordHasheado)
+        // 3. CONTROLAR EL VALOR DEL ESTADO
+        const estadoFinal = estado !== undefined ? estado : 1;
+
+        // Paso A: Insertar en la tabla PADRE (usuario)
         const sqlUsuario = `
-            INSERT INTO usuario (usuario, password, tipoUsuario, nombre, paterno, materno, ci, fechaNacimiento, genero, celular, token, fechaCreacion) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO usuario (usuario, password, tipoUsuario, nombre, paterno, materno, ci, fechaNacimiento, genero, celular, token, fechaCreacion, estado) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
         const [resUsuario] = await conexion.query(sqlUsuario, [
-            usuarioGenerado, // <-- Aquí entra el usuario autogenerado
+            usuarioGenerado, 
             passwordHasheado, 
-            tipoUsuario, nombre, paterno, materno, ci, fechaNacimiento, genero, celular, token, fechaCreacion
+            tipoUsuario, nombre, paterno, materno, ci, fechaNacimiento, genero, celular, token, fechaCreacion,
+            estadoFinal
         ]);
 
         const nuevoIdUsuario = resUsuario.insertId;
@@ -47,14 +49,14 @@ export const insertarUsuarioConRol = async (datosUsuario) => {
         } else if (tipoUsuario === 'Cliente') {
             const sqlCliente = `INSERT INTO cliente (idUsuario, direccion, estadoCivil, ocupacion) VALUES (?, ?, ?, ?)`;
             await conexion.query(sqlCliente, [nuevoIdUsuario, direccion, estadoCivil, ocupacion]);
-        }
+        } 
 
         await conexion.commit();
         
-        // Devolvemos el usuario generado para que el controlador se lo pueda mostrar al Frontend
         return { 
             idUsuario: nuevoIdUsuario,
             usuario: usuarioGenerado,
+            estado: estadoFinal,
             mensaje: `Usuario registrado con éxito. Su nombre de usuario asignado es: ${usuarioGenerado}` 
         };
 
@@ -64,4 +66,13 @@ export const insertarUsuarioConRol = async (datosUsuario) => {
     } finally {
         conexion.release();
     }
+};
+
+// BUSCAR USUARIO POR SU NOMBRE DE USUARIO (Para el Login)
+export const buscarUsuarioPorNombre = async (nombreUsuario) => {
+    const [resultado] = await pool.query(
+        'SELECT * FROM usuario WHERE usuario = ?', 
+        [nombreUsuario]
+    );
+    return resultado[0];
 };
