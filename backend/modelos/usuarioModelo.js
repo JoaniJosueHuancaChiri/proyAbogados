@@ -76,3 +76,15 @@ export const buscarUsuarioPorNombre = async (nombreUsuario) => {
     );
     return resultado[0];
 };
+
+export const actualizarTokenUsuario = async (idUsuario, token) => {
+    try {
+        const [resultado] = await pool.query(
+            'UPDATE usuario SET token = ? WHERE idUsuario = ?',
+            [token, idUsuario]
+        );
+        return resultado;
+    } catch (error) {
+        throw new Error("Error al actualizar el token en la BD: " + error.message);
+    }
+};
