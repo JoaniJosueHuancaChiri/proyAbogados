@@ -1,49 +1,35 @@
-import "./App.css"; 
-import { useEffect, useState } from "react";
-import axios from "axios";
-
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import LandingPage from './pages/LandingPage'; 
+import { DataProvider } from './context/DataContext'; // Importa el Provider
+
+// Tus importaciones...
+import LandingPage from './pages/LandingPage';
 import Login from './pages/Login';
-import Dashboard from './pages/Dashboard'; // 1. IMPORTAMOS TU NUEVA PÁGINA
+import Dashboard from './pages/Dashboard';
+import AbogadosPage from './pages/Abogados/AbogadosPage';
+import ClientesPage from './pages/Clientes/ClientesPage';
+import ExpedientesPage from './pages/Expedientes/ExpedientesPage';
+import UsuariosPage from './pages/Usuarios/UsuariosPage';
+import AdminLayout from './layouts/AdminLayout';
 
 function App() {
-  const [Data, setData] = useState([])
-  
-  useEffect(() => {
-    const getUsers = async () => {
-      const resp = await axios.get("http://localhost:8080/api/users/")
-      const data = resp.data;
-      setData(data.data)
-    }
-    // getUsers() // Descomentar cuando el backend esté encendido
-  }, [])
-
-  if (Data.length === 0) {
-    return (
+  return (
+    <DataProvider> {/* ENVOLVEMOS TODO AQUÍ */}
       <Router>
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
-          
-          {/* 2. AGREGAMOS LA RUTA PARA EL DASHBOARD VALI ADMIN */}
-          <Route path="/dashboard" element={<Dashboard />} />
-          
+          <Route path="/dashboard" element={<AdminLayout />}>
+            <Route index element={<Dashboard />} />
+            <Route path="abogados" element={<AbogadosPage />} />
+            <Route path="clientes" element={<ClientesPage />} />
+            <Route path="expedientes" element={<ExpedientesPage />} />
+            <Route path="usuarios" element={<UsuariosPage />} />
+          </Route>
         </Routes>
       </Router>
-    )
-  }
-
-  return (
-    <>
-      hola mundo
-      {
-        Data.map(name => ( 
-          <li key={name}>{name}</li>  
-        ))
-      }
-    </>
-  )
+    </DataProvider>
+  );
 }
 
 export default App;
