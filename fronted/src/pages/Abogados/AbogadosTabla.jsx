@@ -6,7 +6,7 @@ const AbogadosTabla = ({ lista, onEditar, onEliminar, onView }) => {
   const itemsPerPage = 10;
 
   // 1. Lógica de Filtrado (Busca por nombre, paterno, CI, especialidad o RPA)
-  const listaFiltrada = lista.filter((abg) => {
+ const listaFiltrada = lista.filter((abg) => {
     const termino = searchTerm.toLowerCase();
 
     return (
@@ -15,7 +15,9 @@ const AbogadosTabla = ({ lista, onEditar, onEliminar, onView }) => {
       (abg.materno && abg.materno.toLowerCase().includes(termino)) ||
       (abg.ci && abg.ci.toLowerCase().includes(termino)) ||
       (abg.especialidad && abg.especialidad.toLowerCase().includes(termino)) ||
-      (abg.rpa && abg.rpa.toLowerCase().includes(termino))
+      (abg.rpa && String(abg.rpa).toLowerCase().includes(termino)) || 
+      (abg.celular && abg.celular.toLowerCase().includes(termino)) || 
+      (abg.universidad && abg.universidad.toLowerCase().includes(termino)) 
     );
   });
 
@@ -64,13 +66,16 @@ const AbogadosTabla = ({ lista, onEditar, onEliminar, onView }) => {
                 <th>Nombre Completo</th>
                 <th>Especialidad</th>
                 <th>RPA</th>
+                <th>Celular</th>
+                <th>Universidad</th>
                 <th>Acciones</th>
               </tr>
             </thead>
             <tbody>
               {currentItems.length > 0 ? (
                 currentItems.map((abg) => (
-                  <tr key={abg.id}>
+                  // 🌟 CORREGIDO: u.idUsuario como identificador único real
+                  <tr key={abg.idUsuario}> 
                     <td className="fw-semibold">{abg.ci}</td>
                     <td>{`${abg.nombre || ""} ${abg.paterno || ""} ${abg.materno || ""}`}</td>
                     <td>
@@ -79,6 +84,8 @@ const AbogadosTabla = ({ lista, onEditar, onEliminar, onView }) => {
                       </span>
                     </td>
                     <td>{abg.rpa}</td>
+                    <td>{abg.celular}</td>
+                    <td>{abg.universidad}</td>
                     <td>
                       <div className="d-flex justify-content-center gap-1">
                         <button className="btn btn-primary btn-sm" title="Ver" onClick={() => onView(abg)}>
@@ -87,7 +94,8 @@ const AbogadosTabla = ({ lista, onEditar, onEliminar, onView }) => {
                         <button className="btn btn-info btn-sm text-white" title="Editar" onClick={() => onEditar(abg)}>
                           <i className="bi bi-pencil-square"></i>
                         </button>
-                        <button className="btn btn-danger btn-sm" title="Eliminar" onClick={() => onEliminar(abg.id)}>
+                        {/* 🌟 CORREGIDO: Pasamos todo el objeto 'abg' para sincronizar con el borrado en cascada */}
+                        <button className="btn btn-danger btn-sm" title="Eliminar" onClick={() => onEliminar(abg)}>
                           <i className="bi bi-trash"></i>
                         </button>
                       </div>

@@ -114,7 +114,7 @@ const UsuarioTabla = ({ usuarios, onEdit, onDelete, onView }) => {
                         <button
                           className="btn btn-danger btn-sm"
                           title="Eliminar"
-                          onClick={() => onDelete(usuario.idUsuario)}
+                          onClick={() => onDelete(usuario)}
                         >
                           <i className="bi bi-trash"></i>
                         </button>
