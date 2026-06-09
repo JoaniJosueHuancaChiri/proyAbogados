@@ -15,13 +15,7 @@ const Navbar = ({ onToggleSidebar }) => {
         aria-label="Hide Sidebar"
       ></a>
       
-      <ul className="app-nav">
-        <li className="dropdown">
-          <a className="app-nav__item" href="#" aria-label="Open Profile Menu">
-            <i className="bi bi-person fs-4"></i>
-          </a>
-        </li>
-      </ul>
+      
     </header>
   );
 };

@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
-const UsuarioTabla = ({ usuarios, onEdit, onDelete }) => {
-  const [searchTerm, setSearchTerm] = useState('');
+const UsuarioTabla = ({ usuarios, onEdit, onDelete, onView }) => {
+  const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
   const usuariosFiltrados = usuarios.filter((usuario) => {
     const termino = searchTerm.toLowerCase();
-    
-    const textoEstado = usuario.estado === 0 ? 'inactivo' : 'activo';
+
+    const textoEstado = usuario.estado === 0 ? "inactivo" : "activo";
 
     return (
       (usuario.nombre && usuario.nombre.toLowerCase().includes(termino)) ||
@@ -29,22 +29,30 @@ const UsuarioTabla = ({ usuarios, onEdit, onDelete }) => {
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = usuariosFiltrados.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = usuariosFiltrados.slice(
+    indexOfFirstItem,
+    indexOfLastItem,
+  );
 
   const showingFrom = totalEntries === 0 ? 0 : indexOfFirstItem + 1;
-  const showingTo = indexOfLastItem > totalEntries ? totalEntries : indexOfLastItem;
+  const showingTo =
+    indexOfLastItem > totalEntries ? totalEntries : indexOfLastItem;
 
   return (
     <div className="tile">
       <div className="tile-body">
-        
         {/* Buscador */}
         <div className="d-flex justify-content-end align-items-center mb-3">
-          <label className="me-2 fw-semibold text-secondary mb-0" style={{ fontSize: '14px' }}>Buscar:</label>
+          <label
+            className="me-2 fw-semibold text-secondary mb-0"
+            style={{ fontSize: "14px" }}
+          >
+            Buscar:
+          </label>
           <input
             type="search"
             className="form-control form-control-sm"
-            style={{ width: '250px', borderRadius: '4px' }}
+            style={{ width: "250px", borderRadius: "4px" }}
             placeholder="Buscar administrador..."
             value={searchTerm}
             onChange={(e) => {
@@ -64,7 +72,7 @@ const UsuarioTabla = ({ usuarios, onEdit, onDelete }) => {
                 <th>Apellidos</th>
                 <th>Género</th>
                 <th>Teléfono</th>
-                <th>Status</th>
+                <th>Estado</th>
                 <th>Acciones</th>
               </tr>
             </thead>
@@ -74,24 +82,40 @@ const UsuarioTabla = ({ usuarios, onEdit, onDelete }) => {
                   <tr key={usuario.idUsuario}>
                     <td className="fw-semibold">{usuario.ci}</td>
                     <td>{usuario.nombre}</td>
-                    <td>{`${usuario.paterno || ''} ${usuario.materno || ''}`}</td>
+                    <td>{`${usuario.paterno || ""} ${usuario.materno || ""}`}</td>
                     <td>{usuario.genero}</td>
-                    <td>{usuario.celular}</td>                    
+                    <td>{usuario.celular}</td>
                     <td>
-                      <span 
-                        className={`badge ${usuario.estado === 0 ? 'bg-danger' : 'bg-success'} text-white px-2 py-1`}
-                        style={{ fontSize: '12px', borderRadius: '4px' }}
+                      <span
+                        className={`badge ${usuario.estado === 0 ? "bg-danger" : "bg-success"} text-white px-2 py-1`}
+                        style={{ fontSize: "12px", borderRadius: "4px" }}
                       >
-                        {usuario.estado === 0 ? 'Inactivo' : 'Activo'}
+                        {usuario.estado === 0 ? "Inactivo" : "Activo"}
                       </span>
                     </td>
 
                     <td>
-                      <div className="d-flex gap-1">
-                        <button className="btn btn-info btn-sm text-white" title="Editar" onClick={() => onEdit(usuario)}>
+                      <div className="d-flex justify-content-center gap-1">
+                        <button
+                          className="btn btn-primary btn-sm"
+                          title="Ver"
+                          onClick={() => onView(usuario)}
+                        >
+                          <i className="bi bi-eye"></i>
+                        </button>
+
+                        <button
+                          className="btn btn-info btn-sm text-white"
+                          title="Editar"
+                          onClick={() => onEdit(usuario)}
+                        >
                           <i className="bi bi-pencil-square"></i>
                         </button>
-                        <button className="btn btn-danger btn-sm" title="Eliminar" onClick={() => onDelete(usuario.idUsuario)}>
+                        <button
+                          className="btn btn-danger btn-sm"
+                          title="Eliminar"
+                          onClick={() => onDelete(usuario.idUsuario)}
+                        >
                           <i className="bi bi-trash"></i>
                         </button>
                       </div>
@@ -111,28 +135,38 @@ const UsuarioTabla = ({ usuarios, onEdit, onDelete }) => {
 
         {/* Paginación */}
         <div className="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
-          <div className="text-secondary" style={{ fontSize: '14px' }}>
+          <div className="text-secondary" style={{ fontSize: "14px" }}>
             Mostrando {showingFrom} a {showingTo} de {totalEntries} registros
           </div>
 
           {totalEntries > 0 && (
             <nav>
               <ul className="pagination pagination-sm m-0 gap-1">
-                <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                  <button className="page-link" onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}>
+                <li
+                  className={`page-item ${currentPage === 1 ? "disabled" : ""}`}
+                >
+                  <button
+                    className="page-link"
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.max(prev - 1, 1))
+                    }
+                  >
                     Anterior
                   </button>
                 </li>
 
                 {[...Array(totalPages)].map((_, i) => (
-                  <li key={i + 1} className={`page-item ${currentPage === i + 1 ? 'active' : ''}`}>
+                  <li
+                    key={i + 1}
+                    className={`page-item ${currentPage === i + 1 ? "active" : ""}`}
+                  >
                     <button
                       className="page-link"
                       onClick={() => setCurrentPage(i + 1)}
                       style={{
-                        backgroundColor: currentPage === i + 1 ? '#009688' : '',
-                        borderColor: currentPage === i + 1 ? '#009688' : '',
-                        color: currentPage === i + 1 ? '#fff' : '#009688'
+                        backgroundColor: currentPage === i + 1 ? "#009688" : "",
+                        borderColor: currentPage === i + 1 ? "#009688" : "",
+                        color: currentPage === i + 1 ? "#fff" : "#009688",
                       }}
                     >
                       {i + 1}
@@ -140,8 +174,15 @@ const UsuarioTabla = ({ usuarios, onEdit, onDelete }) => {
                   </li>
                 ))}
 
-                <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                  <button className="page-link" onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}>
+                <li
+                  className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}
+                >
+                  <button
+                    className="page-link"
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                    }
+                  >
                     Siguiente
                   </button>
                 </li>
@@ -149,7 +190,6 @@ const UsuarioTabla = ({ usuarios, onEdit, onDelete }) => {
             </nav>
           )}
         </div>
-
       </div>
     </div>
   );

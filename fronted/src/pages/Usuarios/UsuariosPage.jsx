@@ -6,56 +6,40 @@ import Swal from 'sweetalert2';
 import axios from 'axios';
 
 const UsuariosPage = () => {
-  // 🌟 CAMBIO 1: Traemos "fetchUsuarios" del contexto global para poder recargar la tabla
   const { usuarios, setUsuarios, loading, fetchUsuarios } = useContext(DataContext);
   
   const [showForm, setShowForm] = useState(false);
   const [selectedUsuario, setSelectedUsuario] = useState(null);
+  // ESTADO PARA EL MODAL DE VER
+  const [showModal, setShowModal] = useState(false);
 
-  // 🌟 CAMBIO 2: Volvemos la función asíncrona (async) para usar Axios correctamente
   const handleSave = async (nuevoUsuario) => {
     try {
       let mensaje = 'Usuario registrado correctamente.';
       
       if (selectedUsuario) {
-        // 📝 MODO EDICIÓN (Local por ahora, luego harás el axios.put aquí)
         setUsuarios(usuarios.map(u => u.idUsuario === selectedUsuario.idUsuario ? nuevoUsuario : u));
         mensaje = 'Datos Actualizados correctamente.'; 
         setShowForm(false);
         setSelectedUsuario(null);
       } else {
-        // 🚀 MODO REGISTRO REAL: Enviamos los datos directamente a tu API en el Backend
         const respuesta = await axios.post('http://localhost:8080/api/usuarios/', nuevoUsuario);
-        
-        // Si el backend responde que se creó con éxito (Status 200 o 201)
         if (respuesta.status === 201 || respuesta.status === 200) {
-          // 🔥 LA CLAVE DE TODO: Forzamos al contexto a traer la lista limpia desde MariaDB
           await fetchUsuarios(); 
           setShowForm(false);
         }
       }
 
-      // Despierta la ventana de SweetAlert2 en turquesa
       Swal.fire({
         title: 'Usuarios',
         text: mensaje,
         icon: 'success',
         confirmButtonColor: '#009688', 
-        confirmButtonText: 'OK',
-        customClass: {
-          confirmButton: 'btn btn-primary px-4'
-        }
+        confirmButtonText: 'OK'
       });
-
     } catch (error) {
-      // Si el backend truena por C.I. duplicado o error de SQL, salta aquí
-      console.error("Error al guardar en el servidor:", error);
-      Swal.fire({
-        title: 'Error',
-        text: 'Hubo un problema al registrar el administrador en la base de datos.',
-        icon: 'error',
-        confirmButtonColor: '#d33'
-      });
+      console.error("Error al guardar:", error);
+      Swal.fire({ title: 'Error', text: 'Hubo un problema con la base de datos.', icon: 'error' });
     }
   };
 
@@ -64,7 +48,12 @@ const UsuariosPage = () => {
     setShowForm(true);
   };
 
-  // 🗑️ Eliminar con Ventana de Confirmación (Se queda igual por ahora)
+  // FUNCIÓN PARA ABRIR MODAL VER
+  const handleView = (usuario) => {
+    setSelectedUsuario(usuario);
+    setShowModal(true);
+  };
+
   const handleDelete = (idUsuario) => { 
     Swal.fire({
       title: 'Eliminar Usuario',
@@ -73,29 +62,17 @@ const UsuariosPage = () => {
       showCancelButton: true,
       confirmButtonColor: '#009688', 
       cancelButtonColor: '#bcbcbc',  
-      confirmButtonText: 'Si, eliminar!',
-      cancelButtonText: 'No, cancelar!',
-      reverseButtons: true 
+      confirmButtonText: 'Si, eliminar!'
     }).then((result) => {
       if (result.isConfirmed) {
         setUsuarios(usuarios.filter(u => u.idUsuario !== idUsuario));
-        
-        Swal.fire({
-          title: 'Eliminado',
-          text: 'El usuario ha sido eliminado.',
-          icon: 'success',
-          confirmButtonColor: '#009688'
-        });
+        Swal.fire('Eliminado', 'El usuario ha sido eliminado.', 'success');
       }
     });
   };
 
   if (loading) {
-    return (
-      <div className="d-flex justify-content-center align-items-center" style={{ height: '300px' }}>
-        <div className="text-secondary fw-semibold">Cargando administradores desde la base de datos...</div>
-      </div>
-    );
+    return <div className="d-flex justify-content-center p-5">Cargando...</div>;
   }
 
   return (
@@ -125,10 +102,44 @@ const UsuariosPage = () => {
               usuarios={usuarios} 
               onEdit={handleEdit}
               onDelete={handleDelete}
+              onView={handleView} 
             />
           )}
         </div>
       </div>
+
+      {/* MODAL DE VISUALIZACIÓN */}
+      {showModal && selectedUsuario && (
+        <div className="modal d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header bg-light">
+                <h5 className="modal-title fw-bold">Datos del usuario</h5>
+                <button className="btn-close" onClick={() => setShowModal(false)}></button>
+              </div>
+              <div className="modal-body">
+                <table className="table table-bordered">
+                  <tbody>
+                    <tr><th className="bg-light">C.I.:</th><td>{selectedUsuario.ci}</td></tr>
+                    <tr><th className="bg-light">Nombres:</th><td>{selectedUsuario.nombre}</td></tr>
+                    <tr><th className="bg-light">Apellidos:</th><td>{selectedUsuario.paterno} {selectedUsuario.materno}</td></tr>
+                    <tr><th className="bg-light">Teléfono:</th><td>{selectedUsuario.celular}</td></tr>
+                    
+                    <tr><th className="bg-light">Estado:</th><td>
+                      <span className={`badge ${selectedUsuario.estado === 0 ? 'bg-danger' : 'bg-success'}`}>
+                        {selectedUsuario.estado === 0 ? 'Inactivo' : 'Activo'}
+                      </span>
+                    </td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-secondary" onClick={() => setShowModal(false)}>Cerrar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

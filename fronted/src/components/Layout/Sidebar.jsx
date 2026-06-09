@@ -42,7 +42,7 @@ const Sidebar = () => {
   };
   // Cambia tu useEffect actual por este:
   useEffect(() => {
-    // 🚀 1. EJECUTAR EL GUARDIA EN CADA CAMBIO DE PESTAÑA
+    //EJECUTAR EL GUARDIA EN CADA CAMBIO DE PESTAÑA
     comprobarSesionUnica();
 
     // 2. Extraemos los datos del usuario que guardó el Login
@@ -64,7 +64,7 @@ const Sidebar = () => {
         user.tipoUsuario ? user.tipoUsuario.toUpperCase() : "SIN ROL",
       );
     }
-  }, [location.pathname]); // 👈 🌟 ¡ESTA PARTE ES CRUCIAL! Hace que el useEffect se dispare cada vez que haces clic en el menú
+  }, [location.pathname]); // Hace que el useEffect se dispare cada vez que haces clic en el menú
 
   return (
     <aside className="app-sidebar">
