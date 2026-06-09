@@ -9,7 +9,9 @@ export const DataProvider = ({ children }) => {
 
   const fetchUsuarios = async () => {
     try {
-      const resp = await axios.get("http://localhost:8080/api/users/");
+      const resp = await axios.get("http://localhost:8080/api/usuarios/");
+      // 🚀 COLOQUEMOS ESTE ESPÍA:
+      console.log("🔍 RESPUESTA CRUDA DE AXIOS (resp.data):", resp.data);
       setUsuarios(resp.data.data || resp.data);
     } catch (error) {
       console.error("Error global al cargar usuarios:", error);

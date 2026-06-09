@@ -1,41 +1,62 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react'; 
+import { DataContext } from '../../context/DataContext'; 
 import UsuarioTabla from './UsuarioTabla';
 import UsuarioForm from './UsuarioForm';
-// 🌟 Importamos SweetAlert2
 import Swal from 'sweetalert2'; 
+import axios from 'axios';
 
 const UsuariosPage = () => {
-  const [usuarios, setUsuarios] = useState([]);
+  // 🌟 CAMBIO 1: Traemos "fetchUsuarios" del contexto global para poder recargar la tabla
+  const { usuarios, setUsuarios, loading, fetchUsuarios } = useContext(DataContext);
+  
   const [showForm, setShowForm] = useState(false);
   const [selectedUsuario, setSelectedUsuario] = useState(null);
 
-  // 📝 Guardar o Editar con Ventana de Éxito (Imagen 1)
-  const handleSave = (nuevoUsuario) => {
-    let mensaje = 'Usuario registrado correctamente.';
-    
-    if (selectedUsuario) {
-      // Modo edición
-      setUsuarios(usuarios.map(u => u.ci === selectedUsuario.ci ? nuevoUsuario : u));
-      mensaje = 'Datos Actualizados correctamente.'; // 👈 Mismo texto de tu captura
-    } else {
-      // Modo registro
-      setUsuarios([...usuarios, nuevoUsuario]);
-    }
-
-    setShowForm(false);
-    setSelectedUsuario(null);
-
-    // 🔥 Disparador de la Alerta de Éxito (Imagen 1)
-    Swal.fire({
-      title: 'Usuarios',
-      text: mensaje,
-      icon: 'success',
-      confirmButtonColor: '#009688', // El color turquesa de tu plantilla Vali Admin
-      confirmButtonText: 'OK',
-      customClass: {
-        confirmButton: 'btn btn-primary px-4'
+  // 🌟 CAMBIO 2: Volvemos la función asíncrona (async) para usar Axios correctamente
+  const handleSave = async (nuevoUsuario) => {
+    try {
+      let mensaje = 'Usuario registrado correctamente.';
+      
+      if (selectedUsuario) {
+        // 📝 MODO EDICIÓN (Local por ahora, luego harás el axios.put aquí)
+        setUsuarios(usuarios.map(u => u.idUsuario === selectedUsuario.idUsuario ? nuevoUsuario : u));
+        mensaje = 'Datos Actualizados correctamente.'; 
+        setShowForm(false);
+        setSelectedUsuario(null);
+      } else {
+        // 🚀 MODO REGISTRO REAL: Enviamos los datos directamente a tu API en el Backend
+        const respuesta = await axios.post('http://localhost:8080/api/usuarios/', nuevoUsuario);
+        
+        // Si el backend responde que se creó con éxito (Status 200 o 201)
+        if (respuesta.status === 201 || respuesta.status === 200) {
+          // 🔥 LA CLAVE DE TODO: Forzamos al contexto a traer la lista limpia desde MariaDB
+          await fetchUsuarios(); 
+          setShowForm(false);
+        }
       }
-    });
+
+      // Despierta la ventana de SweetAlert2 en turquesa
+      Swal.fire({
+        title: 'Usuarios',
+        text: mensaje,
+        icon: 'success',
+        confirmButtonColor: '#009688', 
+        confirmButtonText: 'OK',
+        customClass: {
+          confirmButton: 'btn btn-primary px-4'
+        }
+      });
+
+    } catch (error) {
+      // Si el backend truena por C.I. duplicado o error de SQL, salta aquí
+      console.error("Error al guardar en el servidor:", error);
+      Swal.fire({
+        title: 'Error',
+        text: 'Hubo un problema al registrar el administrador en la base de datos.',
+        icon: 'error',
+        confirmButtonColor: '#d33'
+      });
+    }
   };
 
   const handleEdit = (usuario) => {
@@ -43,25 +64,22 @@ const UsuariosPage = () => {
     setShowForm(true);
   };
 
-  // 🗑️ Eliminar con Ventana de Confirmación Estilizada (Imagen 2)
-  const handleDelete = (ci) => {
-    // 🔥 Disparador de la Alerta de Advertencia (Imagen 2)
+  // 🗑️ Eliminar con Ventana de Confirmación (Se queda igual por ahora)
+  const handleDelete = (idUsuario) => { 
     Swal.fire({
       title: 'Eliminar Usuario',
       text: '¿Realmente quiere eliminar el Usuario?',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#009688', // Botón "Si, eliminar!" en turquesa
-      cancelButtonColor: '#bcbcbc',  // Botón "No, cancelar!" en gris
+      confirmButtonColor: '#009688', 
+      cancelButtonColor: '#bcbcbc',  
       confirmButtonText: 'Si, eliminar!',
       cancelButtonText: 'No, cancelar!',
-      reverseButtons: true // Para que "No, cancelar!" salga a la izquierda como tu imagen
+      reverseButtons: true 
     }).then((result) => {
       if (result.isConfirmed) {
-        // Si el usuario confirma, lo borramos del estado
-        setUsuarios(usuarios.filter(u => u.ci !== ci));
+        setUsuarios(usuarios.filter(u => u.idUsuario !== idUsuario));
         
-        // Opcional: Alerta secundaria avisando que ya se borró
         Swal.fire({
           title: 'Eliminado',
           text: 'El usuario ha sido eliminado.',
@@ -71,6 +89,14 @@ const UsuariosPage = () => {
       }
     });
   };
+
+  if (loading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center" style={{ height: '300px' }}>
+        <div className="text-secondary fw-semibold">Cargando administradores desde la base de datos...</div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -96,7 +122,7 @@ const UsuariosPage = () => {
             />
           ) : (
             <UsuarioTabla
-              usuarios={usuarios}
+              usuarios={usuarios} 
               onEdit={handleEdit}
               onDelete={handleDelete}
             />

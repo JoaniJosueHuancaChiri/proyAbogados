@@ -88,3 +88,13 @@ export const actualizarTokenUsuario = async (idUsuario, token) => {
         throw new Error("Error al actualizar el token en la BD: " + error.message);
     }
 };
+export const listarAdministradores = async () => {
+    try {
+        const [resultado] = await pool.query(
+            'SELECT * FROM usuario WHERE tipoUsuario = "Administrador"'
+        );
+        return resultado; 
+    } catch (error) {
+        throw new Error("Error al listar los administradores: " + error.message);
+    }
+};

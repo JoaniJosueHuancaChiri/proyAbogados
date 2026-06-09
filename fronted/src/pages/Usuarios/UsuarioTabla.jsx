@@ -5,16 +5,18 @@ const UsuarioTabla = ({ usuarios, onEdit, onDelete }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  // Filtrado incluyendo el nuevo campo estado
   const usuariosFiltrados = usuarios.filter((usuario) => {
     const termino = searchTerm.toLowerCase();
+    
+    const textoEstado = usuario.estado === 0 ? 'inactivo' : 'activo';
+
     return (
-      usuario.nombre.toLowerCase().includes(termino) ||
-      usuario.apellidoPaterno.toLowerCase().includes(termino) ||
-      (usuario.apellidoMaterno && usuario.apellidoMaterno.toLowerCase().includes(termino)) ||
-      usuario.ci.toLowerCase().includes(termino) ||
-      usuario.celular.toLowerCase().includes(termino) ||
-      (usuario.estado && usuario.estado.toLowerCase().includes(termino))
+      (usuario.nombre && usuario.nombre.toLowerCase().includes(termino)) ||
+      (usuario.paterno && usuario.paterno.toLowerCase().includes(termino)) ||
+      (usuario.materno && usuario.materno.toLowerCase().includes(termino)) ||
+      (usuario.ci && usuario.ci.toLowerCase().includes(termino)) ||
+      (usuario.celular && usuario.celular.toLowerCase().includes(termino)) ||
+      textoEstado.includes(termino)
     );
   });
 
@@ -43,7 +45,7 @@ const UsuarioTabla = ({ usuarios, onEdit, onDelete }) => {
             type="search"
             className="form-control form-control-sm"
             style={{ width: '250px', borderRadius: '4px' }}
-            placeholder="Buscar usuario..."
+            placeholder="Buscar administrador..."
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);
@@ -62,27 +64,25 @@ const UsuarioTabla = ({ usuarios, onEdit, onDelete }) => {
                 <th>Apellidos</th>
                 <th>Género</th>
                 <th>Teléfono</th>
-                <th>Status</th> {/* 🌟 NUEVA COLUMNA */}
+                <th>Status</th>
                 <th>Acciones</th>
               </tr>
             </thead>
             <tbody>
               {currentItems.length > 0 ? (
-                currentItems.map((usuario, index) => (
-                  <tr key={usuario.ci || index}>
+                currentItems.map((usuario) => (
+                  <tr key={usuario.idUsuario}>
                     <td className="fw-semibold">{usuario.ci}</td>
                     <td>{usuario.nombre}</td>
-                    <td>{`${usuario.apellidoPaterno} ${usuario.apellidoMaterno || ''}`}</td>
+                    <td>{`${usuario.paterno || ''} ${usuario.materno || ''}`}</td>
                     <td>{usuario.genero}</td>
-                    <td>{usuario.celular}</td>
-                    
-                    {/* 🌟 NUEVO RENDEREADO DE STATUS (Igual al de tu imagen) */}
+                    <td>{usuario.celular}</td>                    
                     <td>
                       <span 
-                        className={`badge ${usuario.estado === 'Inactivo' ? 'bg-danger' : 'bg-success'} text-white px-2 py-1`}
+                        className={`badge ${usuario.estado === 0 ? 'bg-danger' : 'bg-success'} text-white px-2 py-1`}
                         style={{ fontSize: '12px', borderRadius: '4px' }}
                       >
-                        {usuario.estado || 'Activo'}
+                        {usuario.estado === 0 ? 'Inactivo' : 'Activo'}
                       </span>
                     </td>
 
@@ -91,7 +91,7 @@ const UsuarioTabla = ({ usuarios, onEdit, onDelete }) => {
                         <button className="btn btn-info btn-sm text-white" title="Editar" onClick={() => onEdit(usuario)}>
                           <i className="bi bi-pencil-square"></i>
                         </button>
-                        <button className="btn btn-danger btn-sm" title="Eliminar" onClick={() => onDelete(usuario.ci)}>
+                        <button className="btn btn-danger btn-sm" title="Eliminar" onClick={() => onDelete(usuario.idUsuario)}>
                           <i className="bi bi-trash"></i>
                         </button>
                       </div>
@@ -101,7 +101,7 @@ const UsuarioTabla = ({ usuarios, onEdit, onDelete }) => {
               ) : (
                 <tr>
                   <td colSpan="7" className="text-center text-muted py-3">
-                    No se encontraron usuarios coincidentes.
+                    No se encontraron administradores coincidentes.
                   </td>
                 </tr>
               )}

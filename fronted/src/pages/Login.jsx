@@ -53,6 +53,7 @@ const Login = () => {
       }
 
       console.log("Login exitoso:", datos);
+      localStorage.setItem('token', datos.token);
       localStorage.setItem('usuarioLogueado', JSON.stringify(datos.usuario));
       navigate('/dashboard'); 
 
