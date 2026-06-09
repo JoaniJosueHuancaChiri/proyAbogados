@@ -6,6 +6,8 @@ import {
   removerUsuario,
   obtenerAbogados,
   actualizarUsuarioAbogado,
+  obtenerClientes,
+  actualizarUsuarioCliente,
 } from "../controladores/usuarioControlador.js";
 import express from "express";
 import { verificarDispositivoUnico } from "../config/authMiddleware.js";
@@ -21,4 +23,6 @@ rutas.put("/:id", actualizarUsuarioAdmin);
 rutas.delete('/:id', removerUsuario);
 rutas.get("/abogados", obtenerAbogados);
 rutas.put("/abogados/:id", actualizarUsuarioAbogado);
+rutas.get("/clientes", obtenerClientes);
+rutas.put("/clientes/:id", actualizarUsuarioCliente);
 export default rutas;

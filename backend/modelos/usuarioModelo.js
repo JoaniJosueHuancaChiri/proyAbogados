@@ -13,7 +13,6 @@ export const insertarUsuarioConRol = async (datosUsuario) => {
     genero,
     celular,
     token,
-    fechaCreacion,
     estado,
     rpa,
     especialidad,
@@ -44,8 +43,8 @@ export const insertarUsuarioConRol = async (datosUsuario) => {
 
     // Paso A: Insertar en la tabla PADRE (usuario)
     const sqlUsuario = `
-            INSERT INTO usuario (usuario, password, tipoUsuario, nombre, paterno, materno, ci, fechaNacimiento, genero, celular, token, fechaCreacion, estado) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO usuario (usuario, password, tipoUsuario, nombre, paterno, materno, ci, fechaNacimiento, genero, celular, token, estado) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
     const [resUsuario] = await conexion.query(sqlUsuario, [
       usuarioGenerado,
@@ -59,7 +58,6 @@ export const insertarUsuarioConRol = async (datosUsuario) => {
       genero,
       celular,
       token,
-      fechaCreacion,
       estadoFinal,
     ]);
 
@@ -324,6 +322,96 @@ export const modificarUsuarioAbogado = async (idUsuario, datosActualizados) => {
     `;
     const parametrosAbogado = [rpa, especialidad, universidad, idUsuario];
     await conexion.query(sqlAbogado, parametrosAbogado);
+    await conexion.commit();
+    return true;
+
+  } catch (error) {
+    await conexion.rollback();
+    throw error;
+  } finally {
+    conexion.release();
+  }
+};
+//esto es para clientes desde aqui modificar
+export const listarClientes = async () => {
+  try {
+    const [resultado] = await pool.query(
+      /* 🌟 CORREGIDO: Se cambió 'cliente a' por 'cliente c' para que coincida con c.* y c.idUsuario */
+      `SELECT u.*, c.* FROM usuario u 
+       INNER JOIN cliente c ON u.idUsuario = c.idUsuario 
+       WHERE u.tipoUsuario = 'Cliente'`
+    );
+    return resultado;
+  } catch (error) {
+    throw new Error("Error al listar los clientes en la BD: " + error.message);
+  }
+};
+
+export const buscarClientesPorCI = async (ci) => {
+  try {
+    const terminoBusqueda = `%${ci}%`;
+    
+    const [resultado] = await pool.query(
+      `SELECT u.*, c.* FROM usuario u 
+       INNER JOIN cliente c ON u.idUsuario = c.idUsuario 
+       WHERE u.ci LIKE ? AND u.tipoUsuario = 'Cliente'`,
+      [terminoBusqueda]
+    );
+    return resultado;
+  } catch (error) {
+    throw new Error("Error al buscar cliente por C.I. en la BD: " + error.message);
+  }
+};
+
+export const modificarUsuarioCliente = async (idUsuario, datosActualizados) => {
+  const {
+    nombre,
+    paterno,
+    materno,
+    ci,
+    fechaNacimiento,
+    genero,
+    celular,
+    password,
+    estado,
+    direccion,
+    estadoCivil,
+    ocupacion
+  } = datosActualizados;
+  
+  const conexion = await pool.getConnection();
+
+  try {
+    await conexion.beginTransaction();
+
+    let sqlUsuario;
+    let parametrosUsuario;
+    if (password && password.trim() !== "") {
+      const passwordHasheado = await bcrypt.hash(password, 10);
+      sqlUsuario = `
+        UPDATE usuario 
+        SET nombre = ?, paterno = ?, materno = ?, ci = ?, fechaNacimiento = ?, genero = ?, celular = ?, password = ?, estado = ?
+        WHERE idUsuario = ?
+      `;
+      parametrosUsuario = [nombre, paterno, materno, ci, fechaNacimiento, genero, celular, passwordHasheado, estado, idUsuario];
+    } else {
+      sqlUsuario = `
+        UPDATE usuario 
+        SET nombre = ?, paterno = ?, materno = ?, ci = ?, fechaNacimiento = ?, genero = ?, celular = ?, estado = ?
+        WHERE idUsuario = ?
+      `;
+      parametrosUsuario = [nombre, paterno, materno, ci, fechaNacimiento, genero, celular, estado, idUsuario];
+    }
+    await conexion.query(sqlUsuario, parametrosUsuario);
+
+    const sqlCliente = `
+      UPDATE cliente 
+      SET direccion = ?, estadoCivil = ?, ocupacion = ?
+      WHERE idUsuario = ?
+    `;
+    const parametrosCliente = [direccion, estadoCivil, ocupacion, idUsuario];
+    await conexion.query(sqlCliente, parametrosCliente);
+    
     await conexion.commit();
     return true;
 

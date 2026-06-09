@@ -54,7 +54,6 @@ const AbogadoForm = ({ abogadoData, onSave, onCancel }) => {
     // 🌟 Si es un registro NUEVO, le inyectamos la contraseña inicial (su CI) y la fecha de creación
     if (!abogadoData) {
       datosFinales.password = formData.password || formData.ci.trim(); // Si no digitan clave, usa su CI
-      datosFinales.fechaCreacion = new Date().toISOString().slice(0, 19).replace('T', ' ');
     }
 
     onSave(datosFinales);

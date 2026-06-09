@@ -54,7 +54,6 @@ const UsuarioForm = ({ usuarioData, onSave, onCancel }) => {
     const datosFinalesParaBackend = {
       ...formData,
       tipoUsuario: 'Administrador', // 👈 ¡Justo aquí pasa la magia!
-      fechaCreacion: new Date().toISOString().slice(0, 19).replace('T', ' ') // Formato YYYY-MM-DD HH:mm:ss para SQL
     };
 
     onSave(datosFinalesParaBackend);

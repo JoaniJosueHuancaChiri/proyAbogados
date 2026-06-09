@@ -9,6 +9,9 @@ import {
   listarAbogados,
   buscarAbogadosPorCI,
   modificarUsuarioAbogado,
+  listarClientes,
+  buscarClientesPorCI,
+  modificarUsuarioCliente,
 } from "../modelos/usuarioModelo.js";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
@@ -170,6 +173,46 @@ export const actualizarUsuarioAbogado = async (req, res) => {
     console.error("Error en el controlador:", error);
     return res.status(500).json({
       mensaje: "Hubo un error al actualizar al abogado",
+      error: error.message,
+    });
+  }
+};
+// CLIENTES
+export const obtenerClientes = async (req, res) => {
+  const { ci } = req.query;
+  try {
+    let clientes; 
+
+    if (ci && ci.trim() !== "") {
+      /* 🌟 CORREGIDO: El mensaje en consola ahora dice clientes */
+      console.log(`Buscando clientes que coincidan con CI: ${ci}`);
+      clientes = await buscarClientesPorCI(ci);
+    } else {
+      clientes = await listarClientes(); 
+    }
+    return res.status(200).json(clientes);
+  } catch (error) {
+    console.error("Error en listar/buscar clientes:", error);
+    return res.status(500).json({
+      mensaje: "Hubo un error al procesar la solicitud",
+      error: error.message,
+    });
+  }
+};
+
+export const actualizarUsuarioCliente = async (req, res) => {
+  const { id } = req.params; 
+  try {
+    const actualizado = await modificarUsuarioCliente(id, req.body);
+    if (actualizado) {
+      return res.status(200).json({ ok: true, mensaje: "Cliente actualizado correctamente." });
+    } else {
+      return res.status(404).json({ ok: false, mensaje: "No se encontró el usuario para actualizar." });
+    }
+  } catch (error) {
+    console.error("Error en el controlador:", error);
+    return res.status(500).json({
+      mensaje: "Hubo un error al actualizar al cliente",
       error: error.message,
     });
   }
