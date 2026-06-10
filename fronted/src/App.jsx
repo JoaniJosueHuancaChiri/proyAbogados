@@ -12,6 +12,7 @@ import ExpedientesPage from './pages/Expedientes/ExpedientesPage';
 import UsuariosPage from './pages/Usuarios/UsuariosPage';
 import AdminLayout from './layouts/AdminLayout';
 
+
 function App() {
   return (
     <DataProvider> {/* ENVOLVEMOS TODO AQUÍ */}
