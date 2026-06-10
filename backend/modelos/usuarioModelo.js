@@ -26,7 +26,6 @@ export const insertarUsuarioConRol = async (datosUsuario) => {
   try {
     await conexion.beginTransaction();
 
-    // 1. GENERAR EL USUARIO AUTOMÁTICAMENTE
     const inicialPaterno = paterno ? paterno.trim().charAt(0) : "";
     const inicialMaterno = materno ? materno.trim().charAt(0) : "";
     const inicialNombre = nombre ? nombre.trim().charAt(0) : "";
@@ -35,13 +34,10 @@ export const insertarUsuarioConRol = async (datosUsuario) => {
     const usuarioGenerado =
       `${inicialPaterno}${inicialMaterno}${inicialNombre}${limpiaCI}`.toUpperCase();
 
-    // 2. HASHEAR LA CONTRASEÑA
     const passwordHasheado = await bcrypt.hash(password, 10);
 
-    // 3. CONTROLAR EL VALOR DEL ESTADO
     const estadoFinal = estado !== undefined ? estado : 1;
 
-    // Paso A: Insertar en la tabla PADRE (usuario)
     const sqlUsuario = `
             INSERT INTO usuario (usuario, password, tipoUsuario, nombre, paterno, materno, ci, fechaNacimiento, genero, celular, token, estado) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -63,7 +59,6 @@ export const insertarUsuarioConRol = async (datosUsuario) => {
 
     const nuevoIdUsuario = resUsuario.insertId;
 
-    // Paso B: Insertar en tablas hijas según el tipo
     if (tipoUsuario === "Abogado") {
       const sqlAbogado = `INSERT INTO abogado (idUsuario, rpa, especialidad, universidad) VALUES (?, ?, ?, ?)`;
       await conexion.query(sqlAbogado, [
@@ -98,7 +93,6 @@ export const insertarUsuarioConRol = async (datosUsuario) => {
   }
 };
 
-// BUSCAR USUARIO POR SU NOMBRE DE USUARIO (Para el Login)
 export const buscarUsuarioPorNombre = async (nombreUsuario) => {
   const [resultado] = await pool.query(
     "SELECT * FROM usuario WHERE usuario = ?",
@@ -128,7 +122,6 @@ export const listarAdministradores = async () => {
     throw new Error("Error al listar los administradores: " + error.message);
   }
 };
-// Añade esta función al final de modelos/usuarioModelo.js
 
 export const modificarUsuarioAdmin = async (idUsuario, datosActualizados) => {
   const {
@@ -148,7 +141,6 @@ export const modificarUsuarioAdmin = async (idUsuario, datosActualizados) => {
     let sql;
     let parametros;
 
-    // Si el administrador escribió una nueva contraseña, la hasheamos y la actualizamos
     if (password && password.trim() !== "") {
       const passwordHasheado = await bcrypt.hash(password, 10);
       sql = `
@@ -169,7 +161,6 @@ export const modificarUsuarioAdmin = async (idUsuario, datosActualizados) => {
         idUsuario,
       ];
     } else {
-      // Si la dejó en blanco, actualizamos todo MENOS la contraseña
       sql = `
                 UPDATE usuario 
                 SET nombre = ?, paterno = ?, materno = ?, ci = ?, fechaNacimiento = ?, genero = ?, celular = ?, estado = ?
@@ -197,42 +188,34 @@ export const modificarUsuarioAdmin = async (idUsuario, datosActualizados) => {
   }
 };
 export const eliminarUsuario = async (idUsuario, tipoUsuario) => {
-  // Pedimos una conexión dedicada del pool para manejar la transacción de forma segura
   const conexion = await pool.getConnection();
 
   try {
-    // 🌟 Iniciamos una transacción para que se borre TODO o NADA
     await conexion.beginTransaction();
 
-    // Paso 1: Eliminar primero de la tabla específica (El hijo)
     if (tipoUsuario === "Abogado") {
       await conexion.query("DELETE FROM Abogado WHERE idUsuario = ?", [
         idUsuario,
       ]);
     } else if (tipoUsuario === "Cliente") {
       await conexion.query(
-        "DELETE FROM Cliente WHERE idUsuario = ?", // 👈 Corregido a Cliente
+        "DELETE FROM Cliente WHERE idUsuario = ?", 
         [idUsuario],
       );
     }
 
-    // Paso 2: Ahora que el hijo ya no existe, eliminamos de la tabla principal (El padre)
     const [resultadoUsuario] = await conexion.query(
       "DELETE FROM usuario WHERE idUsuario = ?",
       [idUsuario],
     );
 
-    // Guardamos los cambios permanentemente en MariaDB
     await conexion.commit();
 
-    // Retornamos si se afectó alguna fila en la tabla principal
     return resultadoUsuario.affectedRows > 0;
   } catch (error) {
-    // Si algo falla en medio del camino, cancelamos los borrados para no romper consistencia
     await conexion.rollback();
     throw new Error("Error al eliminar el usuario en la BD: " + error.message);
   } finally {
-    // 🌟 CRÍTICAL: Liberamos la conexión de vuelta al pool para que no se congele el servidor
     conexion.release();
   }
 };
@@ -332,11 +315,9 @@ export const modificarUsuarioAbogado = async (idUsuario, datosActualizados) => {
     conexion.release();
   }
 };
-//esto es para clientes desde aqui modificar
 export const listarClientes = async () => {
   try {
     const [resultado] = await pool.query(
-      /* 🌟 CORREGIDO: Se cambió 'cliente a' por 'cliente c' para que coincida con c.* y c.idUsuario */
       `SELECT u.*, c.* FROM usuario u 
        INNER JOIN cliente c ON u.idUsuario = c.idUsuario 
        WHERE u.tipoUsuario = 'Cliente'`

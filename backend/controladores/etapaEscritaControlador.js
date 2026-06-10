@@ -1,7 +1,6 @@
 import * as etapaModelo from "../modelos/etapaEscritaModelo.js";
 
 export const registrarOActualizarEtapa = async (req, res) => {
-  // Asegúrate de que llegue el id en minúsculas
   const { idexpediente } = req.body; 
 
   if (!idexpediente) {
@@ -9,14 +8,12 @@ export const registrarOActualizarEtapa = async (req, res) => {
   }
 
   try {
-    // Extraemos las rutas de forma segura si Multer las guardó en disco
     const rutasArchivos = {
       demanda: (req.files && req.files['demanda']) ? req.files['demanda'][0].path.replace(/\\/g, '/') : null,
       citacion: (req.files && req.files['citacion']) ? req.files['citacion'][0].path.replace(/\\/g, '/') : null,
       contestacion: (req.files && req.files['contestacion']) ? req.files['contestacion'][0].path.replace(/\\/g, '/') : null,
     };
 
-    // Imprime esto en la terminal de tu BACKEND para ver qué llegó exactamente de React
     console.log("ID Recibido:", idexpediente);
     console.log("Rutas a insertar en BD:", rutasArchivos);
 

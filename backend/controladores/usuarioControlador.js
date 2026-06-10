@@ -113,21 +113,17 @@ export const removerUsuario = async (req, res) => {
     });
   }
 };
-// 1. Recuerda agregar 'buscarAdministradorPorCI' en las importaciones de arriba
 
 export const listarAdministrador = async (req, res) => {
-  // Capturamos el ci desde la query string de la URL (?ci=123)
   const { ci } = req.query;
 
   try {
     let admins;
 
-    // 🧠 Si viene un CI en la URL, llamamos al buscador parcial
     if (ci && ci.trim() !== "") {
       console.log(`Buscando administradores que coincidan con CI: ${ci}`);
       admins = await buscarAdministradorPorCI(ci);
     } else {
-      // 📋 Si no viene ningún CI, listamos todos normalmente
       admins = await listarAdministradores();
     }
 
@@ -184,7 +180,6 @@ export const obtenerClientes = async (req, res) => {
     let clientes; 
 
     if (ci && ci.trim() !== "") {
-      /* 🌟 CORREGIDO: El mensaje en consola ahora dice clientes */
       console.log(`Buscando clientes que coincidan con CI: ${ci}`);
       clientes = await buscarClientesPorCI(ci);
     } else {

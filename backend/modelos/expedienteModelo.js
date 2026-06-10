@@ -1,6 +1,5 @@
 import { pool } from "../config/bd.js";
 
-// Listar todos los expedientes (opcional: con JOIN para mostrar datos del cliente y abogado)
 export const listarExpedientes = async () => {
   try {
     const [resultado] = await pool.query(
@@ -15,8 +14,6 @@ export const listarExpedientes = async () => {
   }
 };
 
-// Crear un nuevo expediente
-// expedienteModelo.js
 export const crearExpediente = async (datosExpediente) => {
   const { nurej, nroExpediente, tipoProceso, juzgado, idCliente, idAbogado, estado } = datosExpediente;
   
@@ -24,7 +21,6 @@ export const crearExpediente = async (datosExpediente) => {
     const sql = `INSERT INTO expediente (nurej, nroExpediente, tipoProceso, juzgado, idCliente, idAbogado, estado) 
                  VALUES (?, ?, ?, ?, ?, ?, ?)`;
     
-    // IMPORTANTE: Los valores deben ser exactamente los que espera MySQL
     const [resultado] = await pool.query(sql, [
       nurej, 
       nroExpediente, 
@@ -32,18 +28,16 @@ export const crearExpediente = async (datosExpediente) => {
       juzgado, 
       idCliente, 
       idAbogado, 
-      estado // Debe ser 'Activo', 'Con Sentencia', 'En Apelación' o 'Archivado'
+      estado 
     ]);
 
     return { idExpediente: resultado.insertId };
   } catch (error) {
-    // Esto es lo que verá tu terminal y evitará que se rompa la conexión
     console.error("Error al insertar en BD:", error.sqlMessage);
     throw new Error(error.sqlMessage || "Error desconocido en base de datos");
   }
 };
 
-// Modificar un expediente
 export const modificarExpediente = async (idExpediente, datosActualizados) => {
   const {
     nurej,
@@ -74,7 +68,6 @@ export const modificarExpediente = async (idExpediente, datosActualizados) => {
   }
 };
 
-// Eliminar un expediente
 export const eliminarExpediente = async (idExpediente) => {
   try {
     const [resultado] = await pool.query(

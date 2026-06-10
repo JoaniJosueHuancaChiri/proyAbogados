@@ -1,6 +1,5 @@
 import { pool } from "../config/bd.js";
 
-// 🔍 OBTENER ETAPA ESCRITA DE UN EXPEDIENTE ESPECÍFICO
 export const obtenerEtapaPorExpediente = async (idexpediente) => {
   try {
     const [resultado] = await pool.query(
@@ -13,16 +12,13 @@ export const obtenerEtapaPorExpediente = async (idexpediente) => {
   }
 };
 
-// 💾 GUARDAR O ACTUALIZAR ETAPA ESCRITA (Gestión Transaccional)
 export const guardarEtapaEscrita = async (idexpediente, rutasArchivos) => {
   const { demanda, citacion, contestacion } = rutasArchivos;
   
   try {
-    // Esta consulta verifica si ya existe el registro para ese expediente
     const existe = await obtenerEtapaPorExpediente(idexpediente);
 
     if (!existe) {
-      // 📥 SI NO EXISTE: Hacemos un INSERT limpio
       const sqlInsert = `
         INSERT INTO etapaescrita (idexpediente, demanda, citacion, contestacion) 
         VALUES (?, ?, ?, ?)
@@ -37,7 +33,6 @@ export const guardarEtapaEscrita = async (idexpediente, rutasArchivos) => {
       if (citacion) { sets.push("citacion = ?"); parametros.push(citacion); }
       if (contestacion) { sets.push("contestacion = ?"); parametros.push(contestacion); }
 
-      // Si no se subió ningún archivo nuevo, no hace falta ejecutar un UPDATE vacío
       if (sets.length === 0) return true;
 
       parametros.push(idexpediente);

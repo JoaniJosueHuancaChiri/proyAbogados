@@ -1,6 +1,5 @@
 import * as Modelo from "../modelos/expedienteModelo.js";
 
-// Listar todos los expedientes o buscar por filtros si lo deseas en el futuro
 export const obtenerExpedientes = async (req, res) => {
   try {
     const expedientes = await Modelo.listarExpedientes();
@@ -11,7 +10,6 @@ export const obtenerExpedientes = async (req, res) => {
   }
 };
 
-// Registrar un nuevo expediente
 export const registrarExpediente = async (req, res) => {
     try {
         const idAbogadoSesion = req.usuarioLogueado?.idUsuario;
@@ -20,13 +18,11 @@ export const registrarExpediente = async (req, res) => {
         await Modelo.crearExpediente(datosConAbogado);
         res.status(201).json({ ok: true, mensaje: "Expediente registrado" });
     } catch (error) {
-        // Esto imprime el error real en la terminal, pero no crashea el servidor
         console.error("Error capturado:", error.message);
         res.status(500).json({ mensaje: "Error al registrar", error: error.message });
     }
 };
 
-// Actualizar un expediente existente
 export const actualizarExpediente = async (req, res) => {
   const { id } = req.params;
   try {
@@ -42,7 +38,6 @@ export const actualizarExpediente = async (req, res) => {
   }
 };
 
-// Eliminar un expediente
 export const eliminarExpediente = async (req, res) => {
   const { id } = req.params;
   try {
