@@ -1,7 +1,8 @@
 import express from 'express';
 import cors from 'cors';
-import usuarioRutas from './rutas/usuarioRutas.js'; // 👈 Fíjate bien en el punto y la barra './'
-import expedienteRutas from './rutas/expedienteRutas.js'; // rutas de expedientes
+import usuarioRutas from './rutas/usuarioRutas.js'; 
+import expedienteRutas from './rutas/expedienteRutas.js'; 
+import etapaRutas from './rutas/etapaEscritaRutas.js';
 
 const app = express();
 
@@ -12,6 +13,8 @@ app.use(express.json());
 // RUTAS BASE
 app.use('/api/usuarios', usuarioRutas);
 app.use('/api/expedientes', expedienteRutas);
+
+app.use('/api/etapas', etapaRutas);
 
 // LEVANTAR SERVIDOR
 app.listen(8080, () => {

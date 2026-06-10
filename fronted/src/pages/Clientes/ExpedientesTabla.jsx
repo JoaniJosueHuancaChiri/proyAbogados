@@ -1,8 +1,15 @@
 import React from 'react';
 
-const ExpedientesTabla = ({ lista, onVolver, onVer, onEditar, onEliminar }) => {
+const ExpedientesTabla = ({ 
+  lista, 
+  onVolver, 
+  onVer, 
+  onEditar, 
+  onEliminar, 
+  onCrearEtapa,  // Nuevo: función para abrir formulario de etapa escrita
+  onListarEtapa  // Nuevo: función para ver lista de etapas escritas
+}) => {
   
-  // Función auxiliar para obtener el color del badge según el estado
   const getBadgeClass = (estado) => {
     switch (estado) {
       case 'Activo': return 'bg-success';
@@ -22,17 +29,16 @@ const ExpedientesTabla = ({ lista, onVolver, onVer, onEditar, onEliminar }) => {
         </button>
       </div>
       
-      {/* Añadimos table-responsive para evitar desajustes en pantallas pequeñas */}
       <div className="tile-body table-responsive">
         <table className="table table-hover table-bordered align-middle">
           <thead className="table-dark">
             <tr>
               <th style={{ width: '10%' }}>NUREJ</th>
-              <th style={{ width: '15%' }}>Nro. Exp</th>
-              <th style={{ width: '25%' }}>Proceso</th>
-              <th style={{ width: '20%' }}>Juzgado</th>
-              <th style={{ width: '15%' }}>Estado</th>
-              <th style={{ width: '15%' }}>Acciones</th>
+              <th style={{ width: '12%' }}>Nro. Exp</th>
+              <th style={{ width: '18%' }}>Proceso</th>
+              <th style={{ width: '15%' }}>Juzgado</th>
+              <th style={{ width: '10%' }}>Estado</th>
+              <th style={{ width: '25%' }}>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -49,12 +55,19 @@ const ExpedientesTabla = ({ lista, onVolver, onVer, onEditar, onEliminar }) => {
                     </span>
                   </td>
                   <td>
-                    <div className="d-flex justify-content-center gap-1">
+                    {/* Contenedor flex para organizar los 5 botones sin desajustar */}
+                    <div className="d-flex flex-wrap justify-content-center gap-1">
                       <button className="btn btn-primary btn-sm" title="Ver" onClick={() => onVer(exp)}>
                         <i className="bi bi-eye"></i>
                       </button>
                       <button className="btn btn-info btn-sm text-white" title="Editar" onClick={() => onEditar(exp)}>
                         <i className="bi bi-pencil-square"></i>
+                      </button>
+                      <button className="btn btn-success btn-sm" title="Crear Etapa Escrita" onClick={() => onCrearEtapa(exp)}>
+                        <i className="bi bi-file-earmark-plus"></i>
+                      </button>
+                      <button className="btn btn-warning btn-sm" title="Ver Etapas Escritas" onClick={() => onListarEtapa(exp)}>
+                        <i className="bi bi-list-check"></i>
                       </button>
                       <button className="btn btn-danger btn-sm" title="Eliminar" onClick={() => onEliminar(exp.idexpediente || exp.idExpediente)}>
                         <i className="bi bi-trash"></i>

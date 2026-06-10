@@ -64,11 +64,11 @@ const ExpedienteForm = ({ idCliente, expedienteData, onSave, onCancel }) => {
             <div className="mb-3 col-md-6">
               <label className="form-label fw-semibold">Estado</label>
               <select className="form-control form-select" name="estado" value={formData.estado} onChange={handleChange} required>
-  <option value="Activo">Activo</option>
-  <option value="Con Sentencia">Con Sentencia</option>
-  <option value="En Apelación">En Apelación</option>
-  <option value="Archivado">Archivado</option>
-</select>
+                <option value="Activo">Activo</option>
+                <option value="Con Sentencia">Con Sentencia</option>
+                <option value="En Apelación">En Apelación</option>
+                <option value="Archivado">Archivado</option>
+              </select>
             </div>
           </div>
 

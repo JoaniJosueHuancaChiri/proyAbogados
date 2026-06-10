@@ -3,6 +3,8 @@ import ClientesTabla from "./ClientesTabla";
 import ClienteForm from "./ClienteForm";
 import ExpedienteForm from "./ExpedienteForm";
 import ExpedientesTabla from "./ExpedientesTabla";
+import EtapaEscritaForm from "./EtapaEscritaForm";
+import EtapaEscritaTabla from "./EtapaEscritaTabla";
 import Swal from "sweetalert2";
 import axios from "axios";
 import {
@@ -25,7 +27,16 @@ const ClientesPage = () => {
   const [expedienteViendo, setExpedienteViendo] = useState(null);
   const [expedienteEditando, setExpedienteEditando] = useState(null);
 
-  // 📋 1. CARGAR LISTA DE CLIENTES DESDE EL BACKEND (Misma lógica que Abogados)
+  const [expedienteParaEtapa, setExpedienteParaEtapa] = useState(null);
+  const [idExpedienteSeleccionado, setIdExpedienteSeleccionado] =
+    useState(null);
+
+  // listar etapa 1
+  // ... dentro de tu componente ClientesPage
+  const [etapasEscritas, setEtapasEscritas] = useState([]); // Para guardar las etapas del expediente
+  const [etapaViendo, setEtapaViendo] = useState(null); // Para el modal de ver
+
+  // 1. CARGAR LISTA DE CLIENTES DESDE EL BACKEND (Misma lógica que Abogados)
   const obtenerClientes = async () => {
     try {
       setLoading(true);
@@ -137,11 +148,33 @@ const ClientesPage = () => {
     });
   };
 
+  const obtenerEtapasEscritas = async (idExpediente) => {
+    try {
+      // Fíjate que ahora la URL es correcta para el backend: /api/etapas/7
+      const respuesta = await axios.get(
+        `http://localhost:8080/api/etapas/${idExpediente}`,
+      );
+
+      // El backend responde con { ok: true, datos: ... }
+      if (respuesta.data.ok) {
+        setEtapasEscritas([respuesta.data.datos]); // Ponemos en un array para que la tabla lo recorra
+        setVista("listaEtapas");
+      } else {
+        Swal.fire("Info", respuesta.data.mensaje, "info");
+      }
+    } catch (error) {
+      console.error("Error al traer etapas:", error);
+      Swal.fire("Error", "No se pudieron obtener los documentos", "error");
+    }
+  };
+
   return (
     <>
       <div className="app-title">
         <div>
-          <h1><i className="bi bi-people"></i> Gestión de Clientes</h1>
+          <h1>
+            <i className="bi bi-people"></i> Gestión de Clientes
+          </h1>
         </div>
         {!formularioAbierto && vista === "tabla" && (
           <button
@@ -169,9 +202,21 @@ const ClientesPage = () => {
             setClienteEditando(null);
           }}
         />
+      ) : vista === "formEtapa" ? (
+        <EtapaEscritaForm
+          idExpediente={idExpedienteSeleccionado}
+          onSave={(data) => {
+            // Aquí manejarás el envío del FormData al backend
+            console.log("Guardando datos...", data);
+            setVista("listaExpedientes");
+          }}
+          onCancel={() => setVista("listaExpedientes")}
+        />
       ) : vista === "listaExpedientes" ? (
         <ExpedientesTabla
-          lista={expedientes.filter((e) => e.idCliente === idClienteSeleccionado)}
+          lista={expedientes.filter(
+            (e) => e.idCliente === idClienteSeleccionado,
+          )}
           onVolver={() => setVista("tabla")}
           onVer={(exp) => setExpedienteViendo(exp)}
           onEditar={(exp) => {
@@ -197,10 +242,22 @@ const ClientesPage = () => {
                   setExpedientes(data);
                 } catch (err) {
                   console.error("Error eliminando expediente:", err);
-                  Swal.fire("Error", "No se pudo eliminar el expediente.", "error");
+                  Swal.fire(
+                    "Error",
+                    "No se pudo eliminar el expediente.",
+                    "error",
+                  );
                 }
               }
             });
+          }}
+          onCrearEtapa={(exp) => {
+            setIdExpedienteSeleccionado(exp.idexpediente || exp.idExpediente);
+            setVista("formEtapa");
+          }}
+          onListarEtapa={(exp) => {
+            setIdExpedienteSeleccionado(exp.idexpediente || exp.idExpediente);
+            obtenerEtapasEscritas(exp.idexpediente || exp.idExpediente); // Llama a la nueva función
           }}
         />
       ) : vista === "formExpediente" ? (
@@ -210,11 +267,23 @@ const ClientesPage = () => {
           onSave={async (nuevoExp) => {
             try {
               if (expedienteEditando) {
-                await apiActualizarExpediente(expedienteEditando.idexpediente || expedienteEditando.idExpediente, nuevoExp);
-                Swal.fire("Expedientes", "Expediente actualizado correctamente.", "success");
+                await apiActualizarExpediente(
+                  expedienteEditando.idexpediente ||
+                    expedienteEditando.idExpediente,
+                  nuevoExp,
+                );
+                Swal.fire(
+                  "Expedientes",
+                  "Expediente actualizado correctamente.",
+                  "success",
+                );
               } else {
                 await apiCrearExpediente(nuevoExp);
-                Swal.fire("Expedientes", "Expediente creado correctamente.", "success");
+                Swal.fire(
+                  "Expedientes",
+                  "Expediente creado correctamente.",
+                  "success",
+                );
               }
               const data = await apiGetExpedientes();
               setExpedientes(data);
@@ -222,13 +291,37 @@ const ClientesPage = () => {
               setVista("tabla");
             } catch (error) {
               console.error("Error guardando expediente:", error);
-              Swal.fire("Error", error.response?.data?.mensaje || "No se pudo guardar expediente.", "error");
+              Swal.fire(
+                "Error",
+                error.response?.data?.mensaje ||
+                  "No se pudo guardar expediente.",
+                "error",
+              );
             }
           }}
           onCancel={() => {
             setExpedienteEditando(null);
             setVista("tabla");
           }}
+          onSave={async (data) => {
+            try {
+              // Ejemplo de cómo deberías enviarlo (ajusta según tu endpoint de backend)
+              await axios.post("http://localhost:8080/api/etapas", data, {
+                headers: { "Content-Type": "multipart/form-data" },
+              });
+              Swal.fire("Éxito", "Etapa guardada correctamente", "success");
+              setVista("listaExpedientes");
+            } catch (error) {
+              Swal.fire("Error", "No se pudo guardar la etapa", "error");
+            }
+          }}
+        />
+      ) : vista === "listaEtapas" ? (
+        <EtapaEscritaTabla
+          lista={etapasEscritas}
+          onVolver={() => setVista("listaExpedientes")}
+          onVer={(etapa) => setEtapaViendo(etapa)}
+          // ... agrega el resto de props necesarios
         />
       ) : (
         <ClientesTabla
@@ -252,19 +345,42 @@ const ClientesPage = () => {
 
       {/* Modal de Visualización */}
       {clienteViendo && (
-        <div className="modal d-block" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
+        <div
+          className="modal d-block"
+          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+        >
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content">
               <div className="modal-header bg-dark text-white">
-                <h5 className="modal-title"><i className="bi bi-person-bounding-box me-2"></i> Ficha del Cliente</h5>
-                <button className="btn-close btn-close-white" onClick={() => setClienteViendo(null)}></button>
+                <h5 className="modal-title">
+                  <i className="bi bi-person-bounding-box me-2"></i> Ficha del
+                  Cliente
+                </h5>
+                <button
+                  className="btn-close btn-close-white"
+                  onClick={() => setClienteViendo(null)}
+                ></button>
               </div>
               <div className="modal-body">
-                <p><strong>Nombre Completo:</strong> {clienteViendo.nombre} {clienteViendo.paterno} {clienteViendo.materno}</p>
-                <p><strong>C.I.:</strong> {clienteViendo.ci}</p>
-                <p><strong>Celular:</strong> {clienteViendo.celular || "Sin registrar"}</p>
-                <p><strong>Dirección:</strong> {clienteViendo.direccion || "Sin registrar"}</p>
-                <p><strong>Ocupación:</strong> {clienteViendo.ocupacion || "Sin registrar"}</p>
+                <p>
+                  <strong>Nombre Completo:</strong> {clienteViendo.nombre}{" "}
+                  {clienteViendo.paterno} {clienteViendo.materno}
+                </p>
+                <p>
+                  <strong>C.I.:</strong> {clienteViendo.ci}
+                </p>
+                <p>
+                  <strong>Celular:</strong>{" "}
+                  {clienteViendo.celular || "Sin registrar"}
+                </p>
+                <p>
+                  <strong>Dirección:</strong>{" "}
+                  {clienteViendo.direccion || "Sin registrar"}
+                </p>
+                <p>
+                  <strong>Ocupación:</strong>{" "}
+                  {clienteViendo.ocupacion || "Sin registrar"}
+                </p>
               </div>
             </div>
           </div>
@@ -273,19 +389,40 @@ const ClientesPage = () => {
 
       {/* Modal para expediente */}
       {expedienteViendo && (
-        <div className="modal d-block" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
+        <div
+          className="modal d-block"
+          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+        >
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content">
               <div className="modal-header bg-dark text-white">
-                <h5 className="modal-title"><i className="bi bi-file-earmark-text me-2"></i> Detalle del Expediente</h5>
-                <button className="btn-close btn-close-white" onClick={() => setExpedienteViendo(null)}></button>
+                <h5 className="modal-title">
+                  <i className="bi bi-file-earmark-text me-2"></i> Detalle del
+                  Expediente
+                </h5>
+                <button
+                  className="btn-close btn-close-white"
+                  onClick={() => setExpedienteViendo(null)}
+                ></button>
               </div>
               <div className="modal-body">
-                <p><strong>NUREJ:</strong> {expedienteViendo.nurej}</p>
-                <p><strong>Nro. Expediente:</strong> {expedienteViendo.nroExpediente}</p>
-                <p><strong>Tipo de Proceso:</strong> {expedienteViendo.tipoProceso}</p>
-                <p><strong>Juzgado:</strong> {expedienteViendo.juzgado}</p>
-                <p><strong>Estado:</strong> {expedienteViendo.estado}</p>
+                <p>
+                  <strong>NUREJ:</strong> {expedienteViendo.nurej}
+                </p>
+                <p>
+                  <strong>Nro. Expediente:</strong>{" "}
+                  {expedienteViendo.nroExpediente}
+                </p>
+                <p>
+                  <strong>Tipo de Proceso:</strong>{" "}
+                  {expedienteViendo.tipoProceso}
+                </p>
+                <p>
+                  <strong>Juzgado:</strong> {expedienteViendo.juzgado}
+                </p>
+                <p>
+                  <strong>Estado:</strong> {expedienteViendo.estado}
+                </p>
               </div>
             </div>
           </div>

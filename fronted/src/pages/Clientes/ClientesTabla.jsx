@@ -84,12 +84,12 @@ const ClientesTabla = ({ lista, onEditar, onEliminar, onView, onCrearExpediente,
                         <button className="btn btn-info btn-sm text-white" title="Editar" onClick={() => onEditar(cli)}>
                           <i className="bi bi-pencil-square"></i>
                         </button>
-                        {/* 🌟 CORREGIDO: Mandamos el objeto completo 'cli' para la extracción de idUsuario y tipoUsuario */}
+                        {/* CORREGIDO: Mandamos el objeto completo 'cli' para la extracción de idUsuario y tipoUsuario */}
                         <button className="btn btn-danger btn-sm" title="Eliminar" onClick={() => onEliminar(cli)}>
                           <i className="bi bi-trash"></i>
                         </button>
                         
-                        {/* 🌟 CORREGIDO: Se cambia cli.id por cli.idUsuario para los Expedientes */}
+                        {/* CORREGIDO: Se cambia cli.id por cli.idUsuario para los Expedientes */}
                         <button className="btn btn-success btn-sm" title="Crear Expediente" onClick={() => onCrearExpediente(cli.idUsuario)}>
                           <i className="bi bi-file-earmark-plus"></i>
                         </button>
