@@ -3,22 +3,20 @@ import React, { useState, useEffect } from 'react';
 const UsuarioForm = ({ usuarioData, onSave, onCancel }) => {
   const [formData, setFormData] = useState({
     nombre: '',
-    paterno: '',       // 🌟 CORRECCIÓN: Sincronizado con MariaDB
-    materno: '',       // 🌟 CORRECCIÓN: Sincronizado con MariaDB
+    paterno: '',     
+    materno: '',       
     ci: '',
     fechaNacimiento: '',
     genero: '',
     celular: '',
-    password: '',      // 🌟 CORRECCIÓN: Sincronizado con MariaDB
-    estado: 1          // 🌟 CORRECCIÓN: MariaDB maneja números (1 = Activo, 0 = Inactivo)
+    password: '',     
+    estado: 1       
   });
 
   useEffect(() => {
     if (usuarioData) {
-      // Si estamos editando, mapeamos lo que viene de la BD al formulario
       setFormData({
         ...usuarioData,
-        // Nos aseguramos de mantener la contraseña en blanco por seguridad al editar
         password: ''
       });
     } else {
@@ -39,7 +37,6 @@ const UsuarioForm = ({ usuarioData, onSave, onCancel }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     
-    // Si cambia el estado de selección, lo guardamos como número para la BD
     if (name === 'estado') {
       setFormData({ ...formData, [name]: value === 'Activo' ? 1 : 0 });
     } else {
@@ -50,10 +47,9 @@ const UsuarioForm = ({ usuarioData, onSave, onCancel }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // 🚀 INYECCIÓN DINÁMICA: Armamos el paquete final agregando el rol oculto
     const datosFinalesParaBackend = {
       ...formData,
-      tipoUsuario: 'Administrador', // 👈 ¡Justo aquí pasa la magia!
+      tipoUsuario: 'Administrador',
     };
 
     onSave(datosFinalesParaBackend);
@@ -77,7 +73,6 @@ const UsuarioForm = ({ usuarioData, onSave, onCancel }) => {
         <form onSubmit={handleSubmit}>
           <div className="row">
             
-            {/* Nombre */}
             <div className="mb-3 col-md-6">
               <label className="form-label fw-semibold">Nombre</label>
               <div className="input-group">
@@ -86,19 +81,16 @@ const UsuarioForm = ({ usuarioData, onSave, onCancel }) => {
               </div>
             </div>
 
-            {/* Apellido Paterno */}
             <div className="mb-3 col-md-6">
               <label className="form-label fw-semibold">Apellido Paterno</label>
               <input type="text" className="form-control" name="paterno" value={formData.paterno || ''} onChange={handleChange} required />
             </div>
 
-            {/* Apellido Materno */}
             <div className="mb-3 col-md-6">
               <label className="form-label fw-semibold">Apellido Materno</label>
               <input type="text" className="form-control" name="materno" value={formData.materno || ''} onChange={handleChange} />
             </div>
 
-            {/* Carnet de Identidad (CI) */}
             <div className="mb-3 col-md-6">
               <label className="form-label fw-semibold">Carnet de Identidad (CI)</label>
               <div className="input-group">
@@ -107,12 +99,10 @@ const UsuarioForm = ({ usuarioData, onSave, onCancel }) => {
               </div>
             </div>
 
-            {/* Fecha de Nacimiento */}
             <div className="mb-3 col-md-6">
               <label className="form-label fw-semibold">Fecha de Nacimiento</label>
               <div className="input-group">
                 <span className="input-group-text"><i className="bi bi-calendar-date"></i></span>
-                {/* Formateamos la fecha si viene completa de la BD */}
                 <input 
                   type="date" 
                   className="form-control" 
@@ -124,7 +114,6 @@ const UsuarioForm = ({ usuarioData, onSave, onCancel }) => {
               </div>
             </div>
 
-            {/* Género */}
             <div className="mb-3 col-md-6">
               <label className="form-label fw-semibold">Género</label>
               <div className="input-group">
@@ -137,7 +126,6 @@ const UsuarioForm = ({ usuarioData, onSave, onCancel }) => {
               </div>
             </div>
 
-            {/* Celular */}
             <div className="mb-3 col-md-6">
               <label className="form-label fw-semibold">Celular</label>
               <div className="input-group">
@@ -146,7 +134,6 @@ const UsuarioForm = ({ usuarioData, onSave, onCancel }) => {
               </div>
             </div>
 
-            {/* Contraseña */}
             <div className="mb-3 col-md-6">
               <label className="form-label fw-semibold">Contraseña</label>
               <div className="input-group">

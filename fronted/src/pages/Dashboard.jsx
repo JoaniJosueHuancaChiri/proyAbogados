@@ -22,7 +22,6 @@ const Dashboard = () => {
           </div>
         </div>
         
-        {/* Tarjeta Clientes */}
         <div className="col-md-6 col-lg-4">
           <div className="widget-small info coloured-icon">
             <i className="icon bi bi-people"></i>
@@ -33,7 +32,6 @@ const Dashboard = () => {
           </div>
         </div>
         
-        {/* Tarjeta Casos Activos */}
         <div className="col-md-6 col-lg-4">
           <div className="widget-small danger coloured-icon">
             <i className="icon bi bi-folder"></i>

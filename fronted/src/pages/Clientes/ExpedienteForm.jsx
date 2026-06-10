@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 
 const ExpedienteForm = ({ idCliente, expedienteData, onSave, onCancel }) => {
-  // Inicialización del estado
   const [formData, setFormData] = useState(expedienteData || {
     nurej: '',
     nroExpediente: '',
@@ -30,37 +29,31 @@ const ExpedienteForm = ({ idCliente, expedienteData, onSave, onCancel }) => {
       <div className="tile-body">
         <form onSubmit={handleSubmit}>
           <div className="row">
-            {/* NUREJ */}
             <div className="mb-3 col-md-6">
               <label className="form-label fw-semibold">NUREJ</label>
               <input type="text" className="form-control" name="nurej" value={formData.nurej} onChange={handleChange} required />
             </div>
             
-            {/* Nro. de Expediente */}
             <div className="mb-3 col-md-6">
               <label className="form-label fw-semibold">Nro. de Expediente</label>
               <input type="text" className="form-control" name="nroExpediente" value={formData.nroExpediente} onChange={handleChange} required />
             </div>
 
-            {/* Tipo de Proceso */}
             <div className="mb-3 col-md-6">
               <label className="form-label fw-semibold">Tipo de Proceso</label>
               <input type="text" className="form-control" name="tipoProceso" value={formData.tipoProceso} onChange={handleChange} required />
             </div>
 
-            {/* Juzgado */}
             <div className="mb-3 col-md-6">
               <label className="form-label fw-semibold">Juzgado</label>
               <input type="text" className="form-control" name="juzgado" value={formData.juzgado} onChange={handleChange} required />
             </div>
 
-            {/* ID Cliente (Solo lectura) */}
             <div className="mb-3 col-md-6">
               <label className="form-label fw-semibold">ID Cliente</label>
               <input type="number" className="form-control" name="idCliente" value={formData.idCliente} onChange={handleChange} readOnly required />
             </div>
 
-            {/* Estado (Opciones personalizadas) */}
             <div className="mb-3 col-md-6">
               <label className="form-label fw-semibold">Estado</label>
               <select className="form-control form-select" name="estado" value={formData.estado} onChange={handleChange} required>
@@ -72,7 +65,6 @@ const ExpedienteForm = ({ idCliente, expedienteData, onSave, onCancel }) => {
             </div>
           </div>
 
-          {/* Botones alineados a la derecha */}
           <div className="tile-footer d-flex justify-content-end gap-2 mt-3">
             <button type="button" className="btn btn-secondary" onClick={onCancel}>
               <i className="bi bi-x-circle me-1"></i> Cancelar

@@ -1,8 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { DataProvider } from './context/DataContext'; // Importa el Provider
+import { DataProvider } from './context/DataContext'; 
 
-// Tus importaciones...
 import LandingPage from './pages/LandingPage';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
@@ -15,7 +14,7 @@ import AdminLayout from './layouts/AdminLayout';
 
 function App() {
   return (
-    <DataProvider> {/* ENVOLVEMOS TODO AQUÍ */}
+    <DataProvider>
       <Router>
         <Routes>
           <Route path="/" element={<LandingPage />} />

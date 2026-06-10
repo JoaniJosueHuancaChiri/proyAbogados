@@ -2,21 +2,18 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const EtapaEscritaForm = ({ idExpediente, onSave, onCancel }) => {
-  // Estado para los archivos cargados localmente en los inputs
   const [archivos, setArchivos] = useState({
     demanda: null,
     citacion: null,
     contestacion: null,
   });
 
-  // 🌟 NUEVO: Estado para almacenar las rutas de PDFs que YA existen en la Base de Datos
   const [pdfsExistentes, setPdfsExistentes] = useState({
     demanda: null,
     citacion: null,
     contestacion: null,
   });
 
-  // 🌟 NUEVO: Cargar los documentos guardados cuando se abre el formulario de este expediente
   useEffect(() => {
     if (idExpediente) {
       axios
@@ -43,15 +40,12 @@ const EtapaEscritaForm = ({ idExpediente, onSave, onCancel }) => {
     e.preventDefault();
     const data = new FormData();
 
-    // 1️⃣ PRIMERO EL TEXTO (Obligatorio para que Multer lo intercepte antes en el req.body)
     data.append("idexpediente", idExpediente);
 
-    // 2️⃣ DESPUÉS LOS ARCHIVOS
     if (archivos.demanda) data.append("demanda", archivos.demanda);
     if (archivos.citacion) data.append("citacion", archivos.citacion);
     if (archivos.contestacion)
       data.append("contestacion", archivos.contestacion);
-    // 🌟 AQUÍ MANDAS EL TRUCO A LA CONSOLA DEL NAVEGADOR
     console.log(
       "Contenido real del FormData:",
       Object.fromEntries(data.entries()),
@@ -60,18 +54,15 @@ const EtapaEscritaForm = ({ idExpediente, onSave, onCancel }) => {
     onSave(data);
   };
 
-  // 🌟 NUEVO: Función para abrir o descargar el PDF real guardado en tu carpeta uploads
   const descargarPdf = (rutaRelativa) => {
     if (!rutaRelativa) return;
     window.open(`http://localhost:8080/${rutaRelativa}`, "_blank");
   };
 
-  // Componente interno estilizado para cada sección de archivo
   const FileSection = ({ title, name, currentFile, rutaGuardada }) => (
     <div className="mb-4 p-3 border rounded bg-light">
       <div className="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
         <h5 className="mb-0 text-dark">{title}</h5>
-        {/* Mostramos un badge si el archivo ya existe en la BD */}
         {rutaGuardada ? (
           <span className="badge bg-success">
             <i className="bi bi-check-circle-fill"></i> Guardado
@@ -99,7 +90,6 @@ const EtapaEscritaForm = ({ idExpediente, onSave, onCancel }) => {
         </small>
       </div>
 
-      {/* Botones de acción dinámicos para los PDFs */}
       <div className="mt-3 d-flex gap-2">
         <button
           type="button"

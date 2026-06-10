@@ -6,8 +6,8 @@ const ExpedientesTabla = ({
   onVer, 
   onEditar, 
   onEliminar, 
-  onCrearEtapa,  // Nuevo: función para abrir formulario de etapa escrita
-  onListarEtapa  // Nuevo: función para ver lista de etapas escritas
+  onCrearEtapa, 
+  onListarEtapa 
 }) => {
   
   const getBadgeClass = (estado) => {
@@ -55,7 +55,6 @@ const ExpedientesTabla = ({
                     </span>
                   </td>
                   <td>
-                    {/* Contenedor flex para organizar los 5 botones sin desajustar */}
                     <div className="d-flex flex-wrap justify-content-center gap-1">
                       <button className="btn btn-primary btn-sm" title="Ver" onClick={() => onVer(exp)}>
                         <i className="bi bi-eye"></i>

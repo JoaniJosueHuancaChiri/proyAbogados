@@ -132,7 +132,6 @@ const UsuariosPage = () => {
     setShowForm(true);
   };
 
-  // FUNCIÓN PARA ABRIR MODAL VER
   const handleView = (usuario) => {
     setSelectedUsuario(usuario);
     setShowModal(true);
@@ -180,7 +179,6 @@ const UsuariosPage = () => {
         </div>
       </div>
 
-      {/* MODAL DE VISUALIZACIÓN */}
       {showModal && selectedUsuario && (
         <div
           className="modal d-block"

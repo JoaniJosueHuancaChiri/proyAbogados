@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import AbogadosTabla from "./AbogadosTabla";
 import AbogadoForm from "./AbogadoForm";
 import Swal from "sweetalert2";
-import axios from "axios"; // 🌟 Importamos Axios para conectar al backend
+import axios from "axios"; 
 
 const AbogadosPage = () => {
   const [formularioAbierto, setFormularioAbierto] = useState(false);
@@ -11,7 +11,6 @@ const AbogadosPage = () => {
   const [abogados, setAbogados] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // 📋 1. CARGAR LISTA DE ABOGADOS DESDE EL BACKEND
   const obtenerAbogados = async () => {
     try {
       setLoading(true);
@@ -27,16 +26,13 @@ const AbogadosPage = () => {
     }
   };
 
-  // Ejecutamos la carga inicial al montar el componente
   useEffect(() => {
     obtenerAbogados();
   }, []);
 
-  // 💾 2. FUNCIÓN PARA GUARDAR (CREAR O EDITAR EN BD)
   const handleSaveAbogado = async (nuevoAbogado) => {
     try {
       if (abogadoEditando) {
-        // 🔄 MODO EDICIÓN (PUT /api/usuarios/abogados/:id)
         await axios.put(
           `http://localhost:8080/api/usuarios/abogados/${abogadoEditando.idUsuario}`,
           nuevoAbogado,
@@ -61,7 +57,6 @@ const AbogadosPage = () => {
         });
       }
 
-      // Refrescamos la lista directamente desde el servidor para ver los cambios
       obtenerAbogados();
       setFormularioAbierto(false);
       setAbogadoEditando(null);
@@ -78,8 +73,6 @@ const AbogadosPage = () => {
     }
   };
 
-  // 🗑️ 3. FUNCIÓN PARA ELIMINAR (DELETE /api/usuarios/:id?tipo=Abogado)
-  // Recibe el objeto entero 'abg' desde la tabla corregida
   const handleDeleteAbogado = (abg) => {
     Swal.fire({
       title: "¿Eliminar Abogado?",
@@ -92,7 +85,6 @@ const AbogadosPage = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          // Invocamos la ruta unificada pasando el id y el query parameter del rol
           await axios.delete(
             `http://localhost:8080/api/usuarios/${abg.idUsuario}?tipo=Abogado`,
           );
@@ -102,7 +94,7 @@ const AbogadosPage = () => {
             "El abogado ha sido eliminado correctamente de todas las tablas.",
             "success",
           );
-          obtenerAbogados(); // Recargamos la lista limpia
+          obtenerAbogados();
         } catch (error) {
           console.error("Error al eliminar abogado:", error);
           Swal.fire(
@@ -165,7 +157,6 @@ const AbogadosPage = () => {
         />
       )}
 
-      {/* Modal de Visualización */}
       {abogadoViendo && (
         <div
           className="modal d-block"

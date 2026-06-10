@@ -29,11 +29,9 @@ const EtapaEscritaTabla = ({
           <tbody>
             {lista && lista.length > 0 ? (
               lista.map((etapa) => (
-                // 🌟 CORRECCIÓN: Usamos idexpediente como key nativa
                 <tr key={etapa.idexpediente}>
                   <td className="fw-bold text-secondary">#{etapa.idexpediente}</td>
                   
-                  {/* DOCUMENTO: DEMANDA */}
                   <td>
                     {etapa.demanda ? (
                       <a 
@@ -49,7 +47,6 @@ const EtapaEscritaTabla = ({
                     )}
                   </td>
 
-                  {/* DOCUMENTO: CITACIÓN */}
                   <td>
                     {etapa.citacion ? (
                       <a 
@@ -65,7 +62,6 @@ const EtapaEscritaTabla = ({
                     )}
                   </td>
 
-                  {/* DOCUMENTO: CONTESTACIÓN */}
                   <td>
                     {etapa.contestacion ? (
                       <a 
@@ -81,7 +77,6 @@ const EtapaEscritaTabla = ({
                     )}
                   </td>
 
-                  {/* ACCIONES */}
                   <td>
                     <div className="d-flex flex-wrap gap-1">
                       <button className="btn btn-sm btn-info text-white" title="Detalles" onClick={() => onVer(etapa)}>
@@ -94,7 +89,6 @@ const EtapaEscritaTabla = ({
                         <i className="bi bi-trash"></i>
                       </button>
                       
-                      {/* Enlaces de flujo a Etapa Oral */}
                       <button className="btn btn-sm btn-primary" title="Iniciar Etapa Oral" onClick={() => onCrearEtapaOral(etapa)}>
                         <i className="bi bi-plus-circle me-1"></i> Oral
                       </button>

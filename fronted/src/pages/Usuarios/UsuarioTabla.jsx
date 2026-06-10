@@ -62,7 +62,6 @@ const UsuarioTabla = ({ usuarios, onEdit, onDelete, onView }) => {
           />
         </div>
 
-        {/* Tabla */}
         <div className="table-responsive">
           <table className="table table-hover table-bordered align-middle m-0">
             <thead className="table-dark">

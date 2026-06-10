@@ -5,7 +5,6 @@ const AbogadosTabla = ({ lista, onEditar, onEliminar, onView }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  // 1. Lógica de Filtrado (Busca por nombre, paterno, CI, especialidad o RPA)
  const listaFiltrada = lista.filter((abg) => {
     const termino = searchTerm.toLowerCase();
 
@@ -21,7 +20,6 @@ const AbogadosTabla = ({ lista, onEditar, onEliminar, onView }) => {
     );
   });
 
-  // 2. Lógica de Paginación
   const totalEntries = listaFiltrada.length;
   const totalPages = Math.ceil(totalEntries / itemsPerPage) || 1;
 
@@ -57,7 +55,6 @@ const AbogadosTabla = ({ lista, onEditar, onEliminar, onView }) => {
           />
         </div>
 
-        {/* Tabla */}
         <div className="table-responsive">
           <table className="table table-hover table-bordered align-middle m-0">
             <thead className="table-dark">
@@ -74,7 +71,6 @@ const AbogadosTabla = ({ lista, onEditar, onEliminar, onView }) => {
             <tbody>
               {currentItems.length > 0 ? (
                 currentItems.map((abg) => (
-                  // 🌟 CORREGIDO: u.idUsuario como identificador único real
                   <tr key={abg.idUsuario}> 
                     <td className="fw-semibold">{abg.ci}</td>
                     <td>{`${abg.nombre || ""} ${abg.paterno || ""} ${abg.materno || ""}`}</td>
@@ -113,7 +109,6 @@ const AbogadosTabla = ({ lista, onEditar, onEliminar, onView }) => {
           </table>
         </div>
 
-        {/* Paginación */}
         <div className="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
           <div className="text-secondary" style={{ fontSize: "14px" }}>
             Mostrando {showingFrom} a {showingTo} de {totalEntries} registros

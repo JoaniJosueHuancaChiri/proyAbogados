@@ -4,13 +4,11 @@ import { NavLink, useNavigate, useLocation } from "react-router-dom";
 const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  // Estados para pintar los datos del Abogado/Admin en tiempo real
   const [nombreCompleto, setNombreCompleto] = useState("Cargando...");
   const [rolUsuario, setRolUsuario] = useState("Usuario");
   const comprobarSesionUnica = async () => {
     const token = localStorage.getItem("token");
 
-    // Si ni siquiera hay token, directo al login
     if (!token) {
       localStorage.clear();
       navigate("/login");
@@ -23,13 +21,12 @@ const Sidebar = () => {
         {
           method: "GET",
           headers: {
-            Authorization: `Bearer ${token}`, // Envíamos el token al authMiddleware
+            Authorization: `Bearer ${token}`,
           },
         },
       );
 
       if (!respuesta.ok) {
-        // 🚨 SI EL MIDDLEWARE RESPONDE 401: Significa que el token de la BD ya es otro
         alert(
           "Tu sesión ha caducado porque se inició sesión en otro dispositivo.",
         );
@@ -40,12 +37,9 @@ const Sidebar = () => {
       console.error("Error de conexión al verificar token:", error);
     }
   };
-  // Cambia tu useEffect actual por este:
   useEffect(() => {
-    //EJECUTAR EL GUARDIA EN CADA CAMBIO DE PESTAÑA
     comprobarSesionUnica();
 
-    // 2. Extraemos los datos del usuario que guardó el Login
     const infoUsuario = localStorage.getItem("usuarioLogueado");
 
     if (infoUsuario) {
@@ -64,23 +58,19 @@ const Sidebar = () => {
         user.tipoUsuario ? user.tipoUsuario.toUpperCase() : "SIN ROL",
       );
     }
-  }, [location.pathname]); // Hace que el useEffect se dispare cada vez que haces clic en el menú
+  }, [location.pathname]); 
 
   return (
     <aside className="app-sidebar">
-      {/* 🌟 Tarjeta del Usuario Dinámica con datos de la BD */}
       <div className="app-sidebar__user">
         <div>
-          {/* Muestra el nombre real */}
           <p className="app-sidebar__user-name text-capitalize">
             {nombreCompleto}
           </p>
-          {/* Muestra Administrador, Abogado o Cliente */}
           <p className="app-sidebar__user-designation">{rolUsuario}</p>
         </div>
       </div>
 
-      {/* Lista de Enlaces */}
       <ul className="app-menu">
         <li>
           <NavLink
@@ -150,7 +140,6 @@ const Sidebar = () => {
             className="app-menu__item"
             to="/login"
             onClick={() => {
-              // Limpieza total al cerrar sesión manualmente
               localStorage.clear();
             }}
           >

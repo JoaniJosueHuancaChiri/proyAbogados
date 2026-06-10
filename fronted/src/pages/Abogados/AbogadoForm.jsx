@@ -12,7 +12,7 @@ const AbogadoForm = ({ abogadoData, onSave, onCancel }) => {
     rpa: '',          
     especialidad: '',  
     universidad: '',  
-    password: '', // 🌟 Agregado para el registro inicial
+    password: '', 
     estado: 1
   });
 
@@ -20,7 +20,7 @@ const AbogadoForm = ({ abogadoData, onSave, onCancel }) => {
     if (abogadoData) {
       setFormData({ 
         ...abogadoData,
-        password: '' // Al editar dejamos la contraseña vacía por defecto
+        password: '' 
       });
     } else {
       setFormData({
@@ -35,7 +35,6 @@ const AbogadoForm = ({ abogadoData, onSave, onCancel }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    // 🌟 Si cambia el estado, guardamos directamente el valor numérico
     if (name === 'estado') {
       setFormData({ ...formData, [name]: Number(value) });
     } else {
@@ -48,12 +47,11 @@ const AbogadoForm = ({ abogadoData, onSave, onCancel }) => {
     
     const datosFinales = {
       ...formData,
-      tipoUsuario: 'Abogado', // 🌟 CRÍTICO para que el backend sepa que es un abogado
+      tipoUsuario: 'Abogado', 
     };
 
-    // 🌟 Si es un registro NUEVO, le inyectamos la contraseña inicial (su CI) y la fecha de creación
     if (!abogadoData) {
-      datosFinales.password = formData.password || formData.ci.trim(); // Si no digitan clave, usa su CI
+      datosFinales.password = formData.password || formData.ci.trim(); 
     }
 
     onSave(datosFinales);
@@ -72,7 +70,6 @@ const AbogadoForm = ({ abogadoData, onSave, onCancel }) => {
       <div className="tile-body">
         <form onSubmit={handleSubmit}>
           <div className="row">
-            {/* Datos Personales */}
             <div className="mb-3 col-md-4"><label className="form-label fw-semibold">Nombre</label><input type="text" className="form-control" name="nombre" value={formData.nombre} onChange={handleChange} required /></div>
             <div className="mb-3 col-md-4"><label className="form-label fw-semibold">Apellido Paterno</label><input type="text" className="form-control" name="paterno" value={formData.paterno} onChange={handleChange} required /></div>
             <div className="mb-3 col-md-4"><label className="form-label fw-semibold">Apellido Materno</label><input type="text" className="form-control" name="materno" value={formData.materno} onChange={handleChange} /></div>
@@ -86,13 +83,11 @@ const AbogadoForm = ({ abogadoData, onSave, onCancel }) => {
               </select>
             </div>
 
-            {/* Datos Profesionales */}
             <div className="mb-3 col-md-6"><label className="form-label fw-semibold">Celular</label><input type="tel" className="form-control" name="celular" value={formData.celular} onChange={handleChange} required /></div>
             <div className="mb-3 col-md-6"><label className="form-label fw-semibold">RPA</label><input type="text" className="form-control" name="rpa" value={formData.rpa} onChange={handleChange} required /></div>
             <div className="mb-3 col-md-6"><label className="form-label fw-semibold">Especialidad</label><input type="text" className="form-control" name="especialidad" value={formData.especialidad} onChange={handleChange} required /></div>
             <div className="mb-3 col-md-6"><label className="form-label fw-semibold">Universidad de Egreso</label><input type="text" className="form-control" name="universidad" value={formData.universidad} onChange={handleChange} required /></div>
 
-            {/* Campos Condicionales o de Configuración */}
             {!abogadoData && (
               <div className="mb-3 col-md-6">
                 <label className="form-label fw-semibold">Contraseña Opcional <span className="text-muted" style={{fontSize: '12px'}}>(Por defecto será su CI)</span></label>

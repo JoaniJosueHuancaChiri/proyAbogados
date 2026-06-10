@@ -11,7 +11,6 @@ const LandingPage = () => {
 
   return (
     <div className="bg-light min-vh-100">
-      {/* Navbar Mejorado */}
       <nav className="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm py-3">
         <div className="container">
           <a
@@ -57,7 +56,6 @@ const LandingPage = () => {
         </div>
       </nav>
 
-      {/* Hero Section */}
       <header
         id="inicio"
         className="text-white text-center py-5 d-flex align-items-center"
@@ -78,7 +76,6 @@ const LandingPage = () => {
             respaldo y absoluta confidencialidad.
           </p>
 
-          {/*TEXTO Y BOTÓN */}
           <div className="mb-4">
             <p className="mb-2">
               ¿Ya eres nuestro cliente? Puedes ver cómo va tu caso aquí.
@@ -94,7 +91,6 @@ const LandingPage = () => {
         </div>
       </header>
 
-      {/* Servicios Jurídicos */}
       <section id="servicios" className="py-5 bg-white">
         <div className="container text-center">
           <h2 className="fw-bold mb-5">Nuestros Servicios</h2>
@@ -120,7 +116,6 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Sección Equipo */}
       <section id="equipo" className="py-5 bg-light">
         <div className="container text-center">
           <h2 className="fw-bold mb-5">Nuestro Equipo</h2>
