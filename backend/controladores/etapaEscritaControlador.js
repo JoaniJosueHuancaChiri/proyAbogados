@@ -1,34 +1,36 @@
 import * as etapaModelo from "../modelos/etapaEscritaModelo.js";
 
 export const registrarOActualizarEtapa = async (req, res) => {
-  const { idexpediente } = req.body; // En el front mandaremos el id en el cuerpo
+  // Asegúrate de que llegue el id en minúsculas
+  const { idexpediente } = req.body; 
 
   if (!idexpediente) {
-    return res.status(400).json({ ok: false, mensaje: "El idexpediente es obligatorio" });
+    return res.status(400).json({ ok: false, mensaje: "El idexpediente no llegó al backend" });
   }
 
   try {
-    // req.files contiene los archivos cargados organizados por su clave
+    // Extraemos las rutas de forma segura si Multer las guardó en disco
     const rutasArchivos = {
-      demanda: req.files['demanda'] ? req.files['demanda'][0].path.replace(/\\/g, '/') : null,
-      citacion: req.files['citacion'] ? req.files['citacion'][0].path.replace(/\\/g, '/') : null,
-      contestacion: req.files['contestacion'] ? req.files['contestacion'][0].path.replace(/\\/g, '/') : null,
+      demanda: (req.files && req.files['demanda']) ? req.files['demanda'][0].path.replace(/\\/g, '/') : null,
+      citacion: (req.files && req.files['citacion']) ? req.files['citacion'][0].path.replace(/\\/g, '/') : null,
+      contestacion: (req.files && req.files['contestacion']) ? req.files['contestacion'][0].path.replace(/\\/g, '/') : null,
     };
+
+    // Imprime esto en la terminal de tu BACKEND para ver qué llegó exactamente de React
+    console.log("ID Recibido:", idexpediente);
+    console.log("Rutas a insertar en BD:", rutasArchivos);
 
     await etapaModelo.guardarEtapaEscrita(idexpediente, rutasArchivos);
 
     return res.status(200).json({
       ok: true,
-      mensaje: "Archivos de la etapa procesados correctamente.",
+      mensaje: "Archivos guardados en la base de datos con éxito.",
       rutas: rutasArchivos
     });
 
   } catch (error) {
-    console.error("Error en etapaEscritaControlador:", error);
-    return res.status(500).json({
-      mensaje: "Error interno al guardar los documentos de la etapa",
-      error: error.message
-    });
+    console.error("Error en controlador:", error);
+    return res.status(500).json({ mensaje: "Error interno", error: error.message });
   }
 };
 

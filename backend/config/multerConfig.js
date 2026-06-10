@@ -5,11 +5,11 @@ import fs from 'fs';
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     // 🌟 Detectamos el nombre del campo del formulario (fieldname)
-    let carpetaDestino = 'uploads/etapas/otros';
+    let carpetaDestino = 'etapas/otros';
     
-    if (file.fieldname === 'demanda') carpetaDestino = 'uploads/etapas/1raEtapa/demanda';
-    if (file.fieldname === 'citacion') carpetaDestino = 'uploads/etapas/1raEtapa/citacion';
-    if (file.fieldname === 'contestacion') carpetaDestino = 'uploads/etapas/1raEtapa/contestacion';
+    if (file.fieldname === 'demanda') carpetaDestino = 'etapas/1raEtapa/demanda';
+    if (file.fieldname === 'citacion') carpetaDestino = 'etapas/1raEtapa/citacion';
+    if (file.fieldname === 'contestacion') carpetaDestino = 'etapas/1raEtapa/contestacion';
 
     // Crear la carpeta automáticamente si no existe en el disco duro
     fs.mkdirSync(carpetaDestino, { recursive: true });

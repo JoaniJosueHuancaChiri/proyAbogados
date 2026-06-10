@@ -148,23 +148,79 @@ const ClientesPage = () => {
     });
   };
 
+  // 🔍 1. CORRECCIÓN: Obtener la Etapa Escrita de la BD con la URL unificada
   const obtenerEtapasEscritas = async (idExpediente) => {
     try {
-      // Fíjate que ahora la URL es correcta para el backend: /api/etapas/7
+      // 🌟 Ajustamos la ruta para que coincida con el backend (/api/etapas/escrita/:id)
       const respuesta = await axios.get(
-        `http://localhost:8080/api/etapas/${idExpediente}`,
+        `http://localhost:8080/api/etapas/escrita/${idExpediente}`,
       );
 
-      // El backend responde con { ok: true, datos: ... }
-      if (respuesta.data.ok) {
-        setEtapasEscritas([respuesta.data.datos]); // Ponemos en un array para que la tabla lo recorra
+      if (respuesta.data.ok && respuesta.data.datos) {
+        // Ponemos el objeto de la etapa dentro de un array para que la Tabla lo recorra sin problemas
+        setEtapasEscritas([respuesta.data.datos]);
         setVista("listaEtapas");
       } else {
-        Swal.fire("Info", respuesta.data.mensaje, "info");
+        // Si el backend responde ok pero datos es null, significa que no hay registros aún
+        setEtapasEscritas([]);
+        setVista("listaEtapas");
+        Swal.fire(
+          "Atención",
+          "Este expediente no cuenta con documentos en la Etapa Escrita todavía. ¡Puedes crear uno nuevo!",
+          "info",
+        );
       }
     } catch (error) {
       console.error("Error al traer etapas:", error);
-      Swal.fire("Error", "No se pudieron obtener los documentos", "error");
+      Swal.fire(
+        "Error",
+        "No se pudieron obtener los documentos de la etapa.",
+        "error",
+      );
+    }
+  };
+
+  // 💾 2. NUEVA FUNCIÓN: Guardar o actualizar la Etapa Escrita (PDFs) en el Servidor
+  const handleSaveEtapaEscrita = async (formDataDeReact) => {
+    console.log("Enviando archivos multipartes al Backend...");
+
+    try {
+      // Mandamos el FormData directo con su cabecera binaria
+      const respuesta = await axios.post(
+        "http://localhost:8080/api/etapas/escrita",
+        formDataDeReact,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        },
+      );
+
+      if (respuesta.data.ok) {
+        Swal.fire({
+          title: "¡Éxito!",
+          text: "Los archivos PDF de la etapa escrita han sido guardados en el servidor.",
+          icon: "success",
+          confirmButtonColor: "#009688",
+        });
+
+        // Refrescamos la tabla con los nuevos datos guardados
+        if (idExpedienteSeleccionado) {
+          obtenerEtapasEscritas(idExpedienteSeleccionado);
+        } else {
+          setVista("expedientes"); // Si no hay id seleccionado, volvemos a la lista de expedientes
+        }
+      }
+    } catch (error) {
+      console.error("Error crítico al subir archivos a la etapa:", error);
+      Swal.fire({
+        title: "Error de Subida",
+        text:
+          error.response?.data?.mensaje ||
+          "No se pudo conectar con el servidor para almacenar los PDFs.",
+        icon: "error",
+        confirmButtonColor: "#009688",
+      });
     }
   };
 
@@ -205,11 +261,7 @@ const ClientesPage = () => {
       ) : vista === "formEtapa" ? (
         <EtapaEscritaForm
           idExpediente={idExpedienteSeleccionado}
-          onSave={(data) => {
-            // Aquí manejarás el envío del FormData al backend
-            console.log("Guardando datos...", data);
-            setVista("listaExpedientes");
-          }}
+          onSave={handleSaveEtapaEscrita} // 🌟 CORREGIDO: Ahora sí se comunica de verdad con Axios y tu Backend
           onCancel={() => setVista("listaExpedientes")}
         />
       ) : vista === "listaExpedientes" ? (
@@ -321,7 +373,20 @@ const ClientesPage = () => {
           lista={etapasEscritas}
           onVolver={() => setVista("listaExpedientes")}
           onVer={(etapa) => setEtapaViendo(etapa)}
-          // ... agrega el resto de props necesarios
+          onEditar={(etapa) => {
+            // 🌟 CORREGIDO: Permitir al abogado volver a entrar a la gestión de PDFs desde la tabla
+            setIdExpedienteSeleccionado(etapa.idexpediente);
+            setVista("formEtapa");
+          }}
+          onEliminar={(id) =>
+            console.log("Eliminar etapa escrita para exp:", id)
+          }
+          onCrearEtapaOral={(etapa) =>
+            console.log("Redirección a etapa oral:", etapa)
+          }
+          onListarEtapaOral={(etapa) =>
+            console.log("Listar histórico oral:", etapa)
+          }
         />
       ) : (
         <ClientesTabla

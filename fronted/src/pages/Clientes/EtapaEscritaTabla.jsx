@@ -8,57 +8,98 @@ const EtapaEscritaTabla = ({
   onCrearEtapaOral, 
   onListarEtapaOral 
 }) => {
+  const URL_BACKEND = "http://localhost:8080/";
+
   return (
     <div className="tile">
-      <h4 className="mb-3">Etapas Escritas</h4>
+      <h4 className="mb-3 text-dark fw-bold">
+        <i className="bi bi-folder-fill text-warning me-2"></i> Control de Etapas Escritas
+      </h4>
       <div className="tile-body table-responsive">
         <table className="table table-hover table-bordered align-middle">
           <thead className="table-dark">
             <tr>
-              <th>ID</th>
-              <th>Demanda</th>
-              <th>Citación</th>
-              <th>Contestación</th>
-              <th>Acciones</th>
+              <th style={{ width: '8%' }}>ID Exp.</th>
+              <th>Demanda (PDF)</th>
+              <th>Citación (PDF)</th>
+              <th>Contestación (PDF)</th>
+              <th style={{ width: '25%' }}>Acciones</th>
             </tr>
           </thead>
           <tbody>
-            {lista.length > 0 ? (
+            {lista && lista.length > 0 ? (
               lista.map((etapa) => (
-                <tr key={etapa.id}>
-                  <td>{etapa.id}</td>
-                  {/* Los enlaces apuntan a la URL del archivo en el servidor */}
+                // 🌟 CORRECCIÓN: Usamos idexpediente como key nativa
+                <tr key={etapa.idexpediente}>
+                  <td className="fw-bold text-secondary">#{etapa.idexpediente}</td>
+                  
+                  {/* DOCUMENTO: DEMANDA */}
                   <td>
-                    <a href={etapa.urlDemanda} target="_blank" rel="noreferrer" className="text-decoration-underline">
-                      {etapa.nombreDemanda || "Ver Demanda"}
-                    </a>
+                    {etapa.demanda ? (
+                      <a 
+                        href={`${URL_BACKEND}${etapa.demanda}`} 
+                        target="_blank" 
+                        rel="noreferrer" 
+                        className="text-primary fw-semibold text-decoration-none"
+                      >
+                        <i className="bi bi-file-earmark-pdf-fill text-danger me-1"></i> Ver Demanda
+                      </a>
+                    ) : (
+                      <span className="text-muted small italic"><i className="bi bi-dash-circle me-1"></i> No cargado</span>
+                    )}
                   </td>
+
+                  {/* DOCUMENTO: CITACIÓN */}
                   <td>
-                    <a href={etapa.urlCitacion} target="_blank" rel="noreferrer" className="text-decoration-underline">
-                      {etapa.nombreCitacion || "Ver Citación"}
-                    </a>
+                    {etapa.citacion ? (
+                      <a 
+                        href={`${URL_BACKEND}${etapa.citacion}`} 
+                        target="_blank" 
+                        rel="noreferrer" 
+                        className="text-primary fw-semibold text-decoration-none"
+                      >
+                        <i className="bi bi-file-earmark-pdf-fill text-danger me-1"></i> Ver Citación
+                      </a>
+                    ) : (
+                      <span className="text-muted small italic"><i className="bi bi-dash-circle me-1"></i> No cargado</span>
+                    )}
                   </td>
+
+                  {/* DOCUMENTO: CONTESTACIÓN */}
                   <td>
-                    <a href={etapa.urlContestacion} target="_blank" rel="noreferrer" className="text-decoration-underline">
-                      {etapa.nombreContestacion || "Ver Contestación"}
-                    </a>
+                    {etapa.contestacion ? (
+                      <a 
+                        href={`${URL_BACKEND}${etapa.contestacion}`} 
+                        target="_blank" 
+                        rel="noreferrer" 
+                        className="text-primary fw-semibold text-decoration-none"
+                      >
+                        <i className="bi bi-file-earmark-pdf-fill text-danger me-1"></i> Ver Contestación
+                      </a>
+                    ) : (
+                      <span className="text-muted small italic"><i className="bi bi-dash-circle me-1"></i> No cargado</span>
+                    )}
                   </td>
+
+                  {/* ACCIONES */}
                   <td>
                     <div className="d-flex flex-wrap gap-1">
-                      <button className="btn btn-sm btn-info" title="Leer" onClick={() => onVer(etapa)}>
+                      <button className="btn btn-sm btn-info text-white" title="Detalles" onClick={() => onVer(etapa)}>
                         <i className="bi bi-eye"></i>
                       </button>
-                      <button className="btn btn-sm btn-warning" title="Editar" onClick={() => onEditar(etapa)}>
-                        <i className="bi bi-pencil"></i>
+                      <button className="btn btn-sm btn-warning text-dark" title="Gestionar Documentos" onClick={() => onEditar(etapa)}>
+                        <i className="bi bi-pencil-square"></i>
                       </button>
-                      <button className="btn btn-sm btn-danger" title="Eliminar" onClick={() => onEliminar(etapa.id)}>
+                      <button className="btn btn-sm btn-danger" title="Eliminar Etapa" onClick={() => onEliminar(etapa.idexpediente)}>
                         <i className="bi bi-trash"></i>
                       </button>
-                      <button className="btn btn-sm btn-primary" title="Crear Etapa Oral" onClick={() => onCrearEtapaOral(etapa)}>
-                        + Oral
+                      
+                      {/* Enlaces de flujo a Etapa Oral */}
+                      <button className="btn btn-sm btn-primary" title="Iniciar Etapa Oral" onClick={() => onCrearEtapaOral(etapa)}>
+                        <i className="bi bi-plus-circle me-1"></i> Oral
                       </button>
-                      <button className="btn btn-sm btn-secondary" title="Listar Etapas Orales" onClick={() => onListarEtapaOral(etapa)}>
-                        List. Oral
+                      <button className="btn btn-sm btn-secondary" title="Ver Historial Oral" onClick={() => onListarEtapaOral(etapa)}>
+                        <i className="bi bi-list-task me-1"></i> List. Oral
                       </button>
                     </div>
                   </td>
@@ -66,7 +107,9 @@ const EtapaEscritaTabla = ({
               ))
             ) : (
               <tr>
-                <td colSpan="5" className="text-center">No hay etapas escritas registradas.</td>
+                <td colSpan="5" className="text-center py-4 text-muted">
+                  <i className="bi bi-info-circle me-2"></i> No hay etapas escritas registradas en el sistema.
+                </td>
               </tr>
             )}
           </tbody>
