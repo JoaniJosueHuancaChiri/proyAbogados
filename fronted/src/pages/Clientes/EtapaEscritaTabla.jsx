@@ -2,6 +2,7 @@ import React from 'react';
 
 const EtapaEscritaTabla = ({ 
   lista, 
+  onVolver,
   onVer, 
   onEditar, 
   onEliminar, 
@@ -12,9 +13,15 @@ const EtapaEscritaTabla = ({
 
   return (
     <div className="tile">
-      <h4 className="mb-3 text-dark fw-bold">
-        <i className="bi bi-folder-fill text-warning me-2"></i> Control de Etapas Escritas
-      </h4>
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h4 className="text-dark fw-bold mb-0">
+          <i className="bi bi-folder-fill text-warning me-2"></i> Control de Etapas Escritas
+        </h4>
+        <button className="btn btn-secondary" onClick={onVolver}>
+          <i className="bi bi-arrow-left me-1"></i> Volver a Expedientes
+        </button>
+      </div>
+      
       <div className="tile-body table-responsive">
         <table className="table table-hover table-bordered align-middle">
           <thead className="table-dark">
@@ -82,18 +89,18 @@ const EtapaEscritaTabla = ({
                       <button className="btn btn-sm btn-info text-white" title="Detalles" onClick={() => onVer(etapa)}>
                         <i className="bi bi-eye"></i>
                       </button>
-                      <button className="btn btn-sm btn-warning text-dark" title="Gestionar Documentos" onClick={() => onEditar(etapa)}>
+                      <button className="btn btn-sm btn-warning text-dark" title="Editar Documentos" onClick={() => onEditar(etapa)}>
                         <i className="bi bi-pencil-square"></i>
                       </button>
                       <button className="btn btn-sm btn-danger" title="Eliminar Etapa" onClick={() => onEliminar(etapa.idexpediente)}>
                         <i className="bi bi-trash"></i>
                       </button>
                       
-                      <button className="btn btn-sm btn-primary" title="Iniciar Etapa Oral" onClick={() => onCrearEtapaOral(etapa)}>
-                        <i className="bi bi-plus-circle me-1"></i> Oral
+                      <button className="btn btn-sm btn-primary" title="Crear Etapa Oral" onClick={() => onCrearEtapaOral(etapa)}>
+                        <i className="bi bi-plus-circle me-1"></i> Etapa Oral
                       </button>
-                      <button className="btn btn-sm btn-secondary" title="Ver Historial Oral" onClick={() => onListarEtapaOral(etapa)}>
-                        <i className="bi bi-list-task me-1"></i> List. Oral
+                      <button className="btn btn-sm btn-secondary" title="Historial Etapa Oral" onClick={() => onListarEtapaOral(etapa)}>
+                        <i className="bi bi-list-task me-1"></i> Listar
                       </button>
                     </div>
                   </td>

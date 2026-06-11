@@ -5,6 +5,10 @@ import ExpedienteForm from "./ExpedienteForm";
 import ExpedientesTabla from "./ExpedientesTabla";
 import EtapaEscritaForm from "./EtapaEscritaForm";
 import EtapaEscritaTabla from "./EtapaEscritaTabla";
+// etapa oral
+import EtapaOralForm from "./EtapaOralForm";
+import EtapaOralTabla from "./EtapaOralTabla";
+// ----------------------------
 import Swal from "sweetalert2";
 import axios from "axios";
 import {
@@ -35,6 +39,7 @@ const ClientesPage = () => {
   // ... dentro de tu componente ClientesPage
   const [etapasEscritas, setEtapasEscritas] = useState([]); // Para guardar las etapas del expediente
   const [etapaViendo, setEtapaViendo] = useState(null); // Para el modal de ver
+  const [etapasOrales, setEtapasOrales] = useState([]);
 
   // 1. CARGAR LISTA DE CLIENTES DESDE EL BACKEND (Misma lógica que Abogados)
   const obtenerClientes = async () => {
@@ -223,6 +228,32 @@ const ClientesPage = () => {
       });
     }
   };
+  // etapa oral
+  const obtenerEtapasOrales = async (idExpediente) => {
+    try {
+      const respuesta = await axios.get(
+        `http://localhost:8080/api/etapas/oral/${idExpediente}`,
+      );
+      if (respuesta.data.ok) {
+        setEtapasOrales(respuesta.data.datos ? [respuesta.data.datos] : []);
+        setVista("listaEtapasOral");
+      }
+    } catch (error) {
+      Swal.fire("Error", "No se pudieron cargar las etapas orales", "error");
+    }
+  };
+
+  const handleSaveEtapaOral = async (formData) => {
+    try {
+      await axios.post("http://localhost:8080/api/etapas/oral", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      Swal.fire("Éxito", "Etapa oral guardada correctamente", "success");
+      setVista("listaExpedientes");
+    } catch (error) {
+      Swal.fire("Error", "No se pudo guardar la etapa oral", "error");
+    }
+  };
 
   return (
     <>
@@ -263,6 +294,19 @@ const ClientesPage = () => {
           idExpediente={idExpedienteSeleccionado}
           onSave={handleSaveEtapaEscrita} // 🌟 CORREGIDO: Ahora sí se comunica de verdad con Axios y tu Backend
           onCancel={() => setVista("listaExpedientes")}
+        />
+      ) : vista === "formEtapaOral" ? ( // etapa oral
+        <EtapaOralForm
+          idExpediente={idExpedienteSeleccionado}
+          onSave={handleSaveEtapaOral}
+          onCancel={() => setVista("listaEtapas")}
+        />
+      ) : vista === "listaEtapasOral" ? (
+        <EtapaOralTabla
+          lista={etapasOrales}
+          onVolver={() => setVista("listaEtapas")}
+          onEditar={(etapa) => setVista("formEtapaOral")}
+          onEliminar={(id) => console.log("Eliminar")}
         />
       ) : vista === "listaExpedientes" ? (
         <ExpedientesTabla
@@ -374,19 +418,22 @@ const ClientesPage = () => {
           onVolver={() => setVista("listaExpedientes")}
           onVer={(etapa) => setEtapaViendo(etapa)}
           onEditar={(etapa) => {
-            // 🌟 CORREGIDO: Permitir al abogado volver a entrar a la gestión de PDFs desde la tabla
+            //
             setIdExpedienteSeleccionado(etapa.idexpediente);
             setVista("formEtapa");
           }}
           onEliminar={(id) =>
             console.log("Eliminar etapa escrita para exp:", id)
           }
-          onCrearEtapaOral={(etapa) =>
-            console.log("Redirección a etapa oral:", etapa)
-          }
-          onListarEtapaOral={(etapa) =>
-            console.log("Listar histórico oral:", etapa)
-          }
+          onCrearEtapaOral={(etapa) => {
+            setIdExpedienteSeleccionado(etapa.idexpediente);
+            setVista("formEtapaOral"); // Cambia a la vista del formulario
+          }}
+          onListarEtapaOral={(etapa) => {
+            setIdExpedienteSeleccionado(etapa.idexpediente);
+            obtenerEtapasOrales(etapa.idexpediente); // Lógica de carga
+            setVista("listaEtapasOral"); // Cambia a la vista de la tabla
+          }}
         />
       ) : (
         <ClientesTabla

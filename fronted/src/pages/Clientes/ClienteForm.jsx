@@ -12,16 +12,16 @@ const ClienteForm = ({ clienteData, onSave, onCancel }) => {
     direccion: "",
     estadoCivil: "",
     ocupacion: "",
-    password: "", // 🌟 Inicializado correctamente
+    password: "", 
     estado: 1,
   });
 
-  // 🌟 CORREGIDO: Un solo useEffect limpio enfocado únicamente en Clientes
+  
   useEffect(() => {
     if (clienteData) {
       setFormData({ 
         ...clienteData,
-        password: "" // Al editar dejamos la contraseña vacía por seguridad
+        password: "" 
       });
     } else {
       setFormData({
@@ -59,7 +59,7 @@ const ClienteForm = ({ clienteData, onSave, onCancel }) => {
       tipoUsuario: "Cliente", 
     };
 
-    // 🌟 CORREGIDO: Evaluamos usando clienteData (No abogadoData)
+   
     if (!clienteData) {
       // Si no digitan contraseña, el sistema le asigna automáticamente su CI sin espacios
       datosFinales.password = formData.password.trim() || formData.ci.trim();

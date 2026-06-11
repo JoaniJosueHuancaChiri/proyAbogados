@@ -7,7 +7,8 @@ const ExpedientesTabla = ({
   onEditar, 
   onEliminar, 
   onCrearEtapa, 
-  onListarEtapa 
+  onListarEtapa,
+
 }) => {
   
   const getBadgeClass = (estado) => {
@@ -68,6 +69,7 @@ const ExpedientesTabla = ({
                       <button className="btn btn-warning btn-sm" title="Ver Etapas Escritas" onClick={() => onListarEtapa(exp)}>
                         <i className="bi bi-list-check"></i>
                       </button>
+                      
                       <button className="btn btn-danger btn-sm" title="Eliminar" onClick={() => onEliminar(exp.idexpediente || exp.idExpediente)}>
                         <i className="bi bi-trash"></i>
                       </button>

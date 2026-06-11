@@ -25,7 +25,7 @@ const UsuariosPage = () => {
           paterno: nuevoUsuario.paterno,
           materno: nuevoUsuario.materno,
           ci: nuevoUsuario.ci,
-          fechaNacimiento: formatearFechaSegura(nuevoUsuario.fechaNacimiento), // 👈 Uso seguro
+          fechaNacimiento: formatearFechaSegura(nuevoUsuario.fechaNacimiento), 
           genero: nuevoUsuario.genero,
           celular: nuevoUsuario.celular,
           password: nuevoUsuario.password,
@@ -38,12 +38,12 @@ const UsuariosPage = () => {
           "📡 ENVIANDO A PUT:",
           `http://localhost:8080/api/usuarios/${idParaEditar}`,
         );
-        console.log("📦 DATOS ENVIADOS EN EL BODY:", datosLimpios);
+        console.log("DATOS ENVIADOS EN EL BODY:", datosLimpios);
         const respuesta = await axios.put(
           `http://localhost:8080/api/usuarios/${idParaEditar}`,
           datosLimpios,
         );
-        console.log("📥 RESPUESTA DEL SERVIDOR (PUT):", respuesta);
+        console.log("RESPUESTA DEL SERVIDOR (PUT):", respuesta);
         if (respuesta.status === 200 || respuesta.data.ok) {
           mensaje = "Datos Actualizados correctamente.";
           await fetchUsuarios();
