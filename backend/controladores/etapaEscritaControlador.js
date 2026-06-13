@@ -7,6 +7,7 @@ export const registrarOActualizarEtapa = async (req, res) => {
     return res.status(400).json({ ok: false, mensaje: "El idexpediente no llegó al backend" });
   }
 
+  
   try {
     const rutasArchivos = {
       demanda: (req.files && req.files['demanda']) ? req.files['demanda'][0].path.replace(/\\/g, '/') : null,

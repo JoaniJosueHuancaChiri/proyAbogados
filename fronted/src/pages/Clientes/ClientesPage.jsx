@@ -357,61 +357,36 @@ const ClientesPage = () => {
           }}
         />
       ) : vista === "formExpediente" ? (
-        <ExpedienteForm
-          idCliente={idClienteSeleccionado}
-          expedienteData={expedienteEditando}
-          onSave={async (nuevoExp) => {
-            try {
-              if (expedienteEditando) {
-                await apiActualizarExpediente(
-                  expedienteEditando.idexpediente ||
-                    expedienteEditando.idExpediente,
-                  nuevoExp,
-                );
-                Swal.fire(
-                  "Expedientes",
-                  "Expediente actualizado correctamente.",
-                  "success",
-                );
-              } else {
-                await apiCrearExpediente(nuevoExp);
-                Swal.fire(
-                  "Expedientes",
-                  "Expediente creado correctamente.",
-                  "success",
-                );
-              }
-              const data = await apiGetExpedientes();
-              setExpedientes(data);
-              setExpedienteEditando(null);
-              setVista("tabla");
-            } catch (error) {
-              console.error("Error guardando expediente:", error);
-              Swal.fire(
-                "Error",
-                error.response?.data?.mensaje ||
-                  "No se pudo guardar expediente.",
-                "error",
-              );
-            }
-          }}
-          onCancel={() => {
-            setExpedienteEditando(null);
-            setVista("tabla");
-          }}
-          onSave={async (data) => {
-            try {
-              // Ejemplo de cómo deberías enviarlo (ajusta según tu endpoint de backend)
-              await axios.post("http://localhost:8080/api/etapas", data, {
-                headers: { "Content-Type": "multipart/form-data" },
-              });
-              Swal.fire("Éxito", "Etapa guardada correctamente", "success");
-              setVista("listaExpedientes");
-            } catch (error) {
-              Swal.fire("Error", "No se pudo guardar la etapa", "error");
-            }
-          }}
-        />
+  <ExpedienteForm
+    idCliente={idClienteSeleccionado}
+    expedienteData={expedienteEditando}
+    onCancel={() => {
+      setExpedienteEditando(null);
+      setVista("listaExpedientes"); // Corregido: regresa a la lista, no a la tabla principal
+    }}
+    onSave={async (nuevoExp) => {
+      try {
+        if (expedienteEditando) {
+          await apiActualizarExpediente(
+            expedienteEditando.idexpediente || expedienteEditando.idExpediente,
+            nuevoExp
+          );
+          Swal.fire("Expedientes", "Actualizado correctamente.", "success");
+        } else {
+          await apiCrearExpediente(nuevoExp);
+          Swal.fire("Expedientes", "Creado correctamente.", "success");
+        }
+        const data = await apiGetExpedientes();
+        setExpedientes(data);
+        setExpedienteEditando(null);
+        setVista("listaExpedientes");
+      } catch (error) {
+        console.error("Error guardando expediente:", error);
+        Swal.fire("Error", "No se pudo guardar expediente.", "error");
+      }
+    }}
+  />
+
       ) : vista === "listaEtapas" ? (
         <EtapaEscritaTabla
           lista={etapasEscritas}
