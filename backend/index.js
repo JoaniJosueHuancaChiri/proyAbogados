@@ -6,6 +6,7 @@ import etapaEscritaRutas from './rutas/etapaEscritaRutas.js';
 // nuevo
 import etapaOralRutas from './rutas/etapaOralRutas.js';
 import etapaDecisoriaRutas from './rutas/etapaDecisoriaRutas.js';
+import etapaImpugnativaRutas from './rutas/etapaImpugnativaRutas.js';
 //--
 import path from 'path'; 
 import { fileURLToPath } from 'url';
@@ -25,10 +26,12 @@ app.use('/api/etapas/escrita', etapaEscritaRutas);
 // nuevo
 app.use('/api/etapas/oral', etapaOralRutas);
 app.use('/api/etapas/decisoria', etapaDecisoriaRutas);
+app.use('/api/etapas/impugnativa', etapaImpugnativaRutas);
 
 app.listen(8080, () => {
     console.log("Servidor se levantó correctamente en el puerto 8080");
 });
+
 
 
 

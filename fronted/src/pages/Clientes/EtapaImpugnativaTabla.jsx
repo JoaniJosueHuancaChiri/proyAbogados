@@ -1,9 +1,14 @@
 import React from "react";
 
-const EtapaDecisoriaTabla = ({ lista, onVolver, onEditar, onEliminar, onCrearEtapaInpugnativa, onListarEtapaInpugnativa }) => {
+const EtapaImpugnativaTabla = ({ 
+  lista, 
+  onVolver, 
+  onEditar, 
+  onEliminar 
+}) => {
   const URL_BACKEND = "http://localhost:8080/";
 
-  // Componente reutilizable para renderizar el enlace al PDF de la Sentencia
+  // Componente reutilizable para renderizar el enlace al PDF de la Impugnación
   const PdfLink = ({ ruta, label }) => (
     <td>
       {ruta ? (
@@ -17,7 +22,7 @@ const EtapaDecisoriaTabla = ({ lista, onVolver, onEditar, onEliminar, onCrearEta
         </a>
       ) : (
         <span className="text-muted small italic">
-          <i className="bi bi-dash-circle me-1"></i> No cargada
+          <i className="bi bi-dash-circle me-1"></i> No cargado
         </span>
       )}
     </td>
@@ -27,10 +32,10 @@ const EtapaDecisoriaTabla = ({ lista, onVolver, onEditar, onEliminar, onCrearEta
     <div className="tile">
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h4 className="text-dark fw-bold mb-0">
-          <i className="bi bi-gavel text-primary me-2"></i> Resolución de Etapa Decisoria
+          <i className="bi bi-bank text-primary me-2"></i> Resolución de Etapa Impugnativa
         </h4>
         <button className="btn btn-secondary" onClick={onVolver}>
-          <i className="bi bi-arrow-left me-1"></i> Volver a Etapa Oral
+          <i className="bi bi-arrow-left me-1"></i> Volver a Etapa Decisoria
         </button>
       </div>
 
@@ -39,7 +44,7 @@ const EtapaDecisoriaTabla = ({ lista, onVolver, onEditar, onEliminar, onCrearEta
           <thead className="table-dark">
             <tr>
               <th style={{ width: "15%" }}>ID Exp.</th>
-              <th>Documento Resolutivo</th>
+              <th>Documento de Impugnación</th>
               <th style={{ width: "20%" }}>Acciones</th>
             </tr>
           </thead>
@@ -49,33 +54,25 @@ const EtapaDecisoriaTabla = ({ lista, onVolver, onEditar, onEliminar, onCrearEta
                 <tr key={etapa.idexpediente}>
                   <td className="fw-bold text-secondary">#{etapa.idexpediente}</td>
                   
-                  {/* ⚠️ Mapeamos con 'setencia' respetando la columna de la BD */}
-                  <PdfLink ruta={etapa.setencia} label="Sentencia Definitiva" />
+                  {/* ⚠️ Mapeamos con 'recursos' respetando estrictamente el campo de tu BD */}
+                  <PdfLink ruta={etapa.recursos} label="Recurso de Apelación" />
 
                   <td>
                     <div className="d-flex gap-1">
                       <button
                         className="btn btn-sm btn-warning text-dark"
-                        title="Modificar Sentencia"
+                        title="Modificar Impugnación"
                         onClick={() => onEditar(etapa)}
                       >
                         <i className="bi bi-pencil-square"></i>
                       </button>
                       <button
                         className="btn btn-sm btn-danger"
-                        title="Eliminar Registro Decisorio"
+                        title="Eliminar Registro Impugnativo"
                         onClick={() => onEliminar(etapa.idexpediente)}
                       >
                         <i className="bi bi-trash"></i>
                       </button>
-                      
-                      <button className="btn btn-sm btn-primary" title="Crear Etapa Inpugnativa" onClick={() => onCrearEtapaInpugnativa(etapa)}>
-                        <i className="bi bi-plus-circle me-1"></i> Etapa Inpugnativa
-                      </button>
-                      <button className="btn btn-sm btn-secondary" title="Historial Etapa Inpugnativa" onClick={() => onListarEtapaInpugnativa(etapa)}>
-                        <i className="bi bi-list-task me-1"></i> Listar
-                      </button>
-
                     </div>
                   </td>
                 </tr>
@@ -83,7 +80,7 @@ const EtapaDecisoriaTabla = ({ lista, onVolver, onEditar, onEliminar, onCrearEta
             ) : (
               <tr>
                 <td colSpan="3" className="text-center py-4 text-muted">
-                  <i className="bi bi-info-circle me-2"></i> Este expediente no cuenta con una sentencia registrada todavía.
+                  <i className="bi bi-info-circle me-2"></i> Este expediente no cuenta con un recurso impugnativo registrado todavía.
                 </td>
               </tr>
             )}
@@ -94,4 +91,4 @@ const EtapaDecisoriaTabla = ({ lista, onVolver, onEditar, onEliminar, onCrearEta
   );
 };
 
-export default EtapaDecisoriaTabla;
+export default EtapaImpugnativaTabla;

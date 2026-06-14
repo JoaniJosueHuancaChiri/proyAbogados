@@ -10,7 +10,7 @@ const storage = multer.diskStorage({
     if (file.fieldname === 'demanda') carpetaDestino = 'etapas/1raEtapa/demanda';
     if (file.fieldname === 'citacion') carpetaDestino = 'etapas/1raEtapa/citacion';
     if (file.fieldname === 'contestacion') carpetaDestino = 'etapas/1raEtapa/contestacion';
-    
+
     // 🗣️ 2da Etapa: Oral
     if (file.fieldname === 'ratificacionDemanda') carpetaDestino = 'etapas/2daEtapa/ratificacion';
     if (file.fieldname === 'tentativaConciliacion') carpetaDestino = 'etapas/2daEtapa/conciliacion';
@@ -20,6 +20,9 @@ const storage = multer.diskStorage({
 
     // ⚖️ 3ra Etapa: Decisoria 🌟 (NUEVO CONTROL)
     if (file.fieldname === 'sentencia') carpetaDestino = 'etapas/3raEtapa/sentencia';
+
+    // 4ta Etapa: Impugnativa
+    if (file.fieldname === 'recursos') carpetaDestino = 'etapas/4taEtapa/recursos';
 
     // Crear la carpeta automáticamente si no existe en el disco duro
     fs.mkdirSync(carpetaDestino, { recursive: true });
@@ -74,3 +77,17 @@ export const cargarSentenciaArchivo = multer({
     }
   }
 }).single('sentencia'); // 👈 Ojo: '.single' porque solo se subirá un archivo de este tipo
+
+// 4️⃣ Middleware para Etapa Impugnativa (Campo único 'recursos')
+export const cargarEtapaImpugnativaArchivos = multer({
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype === 'application/pdf') {
+      cb(null, true);
+    } else {
+      cb(new Error('Solo se permiten recursos en formato PDF'), false);
+    }
+  }
+}).fields([
+  { name: 'recursos', maxCount: 1 }
+]);

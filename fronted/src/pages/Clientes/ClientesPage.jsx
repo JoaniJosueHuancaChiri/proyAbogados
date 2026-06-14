@@ -10,6 +10,9 @@ import EtapaOralForm from "./EtapaOralForm";
 import EtapaOralTabla from "./EtapaOralTabla";
 import EtapaDecisoriaForm from "./EtapaDecisoriaForm";
 import EtapaDecisoriaTabla from "./EtapaDecisoriaTabla";
+// etapa impugnativa
+import EtapaImpugnativaForm from "./EtapaImpugnativaForm";
+import EtapaImpugnativaTabla from "./EtapaImpugnativaTabla";
 // ----------------------------
 import Swal from "sweetalert2";
 import axios from "axios";
@@ -43,6 +46,7 @@ const ClientesPage = () => {
   const [etapaViendo, setEtapaViendo] = useState(null); // Para el modal de ver
   const [etapasOrales, setEtapasOrales] = useState([]);
   const [etapasDecisorias, setEtapasDecisorias] = useState([]);
+  const [etapasImpugnativas, setEtapasImpugnativas] = useState([]);
   // 1. CARGAR LISTA DE CLIENTES DESDE EL BACKEND (Misma lógica que Abogados)
   const obtenerClientes = async () => {
     try {
@@ -296,6 +300,53 @@ const ClientesPage = () => {
     }
   };
 
+  // 4ta Etapa: Impugnativa (Apelaciones y Recursos)
+  const obtenerEtapasImpugnativas = async (idExpediente) => {
+    try {
+      const respuesta = await axios.get(
+        `http://localhost:8080/api/etapas/impugnativa/${idExpediente}`,
+      );
+      if (respuesta.data.ok) {
+        // Homologamos guardando en un array [datos] para que las estructuras iteren limpio
+        setEtapasImpugnativas(
+          respuesta.data.datos ? [respuesta.data.datos] : [],
+        );
+        setVista("listaEtapasImpugnativa");
+      }
+    } catch (error) {
+      console.error("Error al obtener etapa impugnativa:", error);
+      Swal.fire(
+        "Error",
+        "No se pudo cargar la información de la etapa impugnativa",
+        "error",
+      );
+    }
+  };
+
+  const handleSaveEtapaImpugnativa = async (formData) => {
+    try {
+      await axios.post(
+        "http://localhost:8080/api/etapas/impugnativa",
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" }, // Crucial para los archivos de impugnación
+        },
+      );
+      Swal.fire(
+        "Éxito",
+        "Recursos de impugnación guardados correctamente",
+        "success",
+      );
+
+      // Una vez guardado, actualizamos datos y regresamos a la tabla de control decisorio
+      obtenerEtapasDecisorias(idExpedienteSeleccionado);
+      setVista("listaEtapasDecisoria");
+    } catch (error) {
+      console.error("Error al guardar etapa impugnativa:", error);
+      Swal.fire("Error", "No se pudo guardar la etapa impugnativa", "error");
+    }
+  };
+
   return (
     <>
       <div className="app-title">
@@ -360,18 +411,40 @@ const ClientesPage = () => {
         />
       ) : vista === "formEtapaDecisoria" ? (
         <EtapaDecisoriaForm
-        idExpediente={idExpedienteSeleccionado}
-        onSave={handleSaveEtapaDecisoria}
-        // Si quieres que al cancelar vaya a la tabla de sentencias:
-        onCancel={() => setVista("listaEtapasDecisoria")} 
+          idExpediente={idExpedienteSeleccionado}
+          onSave={handleSaveEtapaDecisoria}
+          // Si quieres que al cancelar vaya a la tabla de sentencias:
+          onCancel={() => setVista("listaEtapasOral")}
         />
-      ) : // 🌟 NUEVO BLOQUE: Manejo de la tabla de la 3ra Etapa (Sentencia)
+      ) : // NUEVO BLOQUE: Manejo de la tabla de la 3ra Etapa (Sentencia)
       vista === "listaEtapasDecisoria" ? (
         <EtapaDecisoriaTabla
           lista={etapasDecisorias} // Tu estado que guarda la respuesta de obtenerEtapasDecisorias
           onVolver={() => setVista("listaEtapasOral")}
           onEditar={(etapa) => setVista("formEtapaDecisoria")}
           onEliminar={(id) => console.log("Eliminar sentencia:", id)}
+          //  ENLACE DE BOTONES CLAVE:
+          onCrearEtapaInpugnativa={(etapa) => {
+            setIdExpedienteSeleccionado(etapa.idexpediente);
+            setVista("formEtapaImpugnativa"); // Cambia al formulario de subida
+          }}
+          onListarEtapaInpugnativa={(etapa) => {
+            setIdExpedienteSeleccionado(etapa.idexpediente);
+            obtenerEtapasImpugnativas(etapa.idexpediente); // Carga y cambia a vista historial
+          }}
+        />
+      ) : vista === "formEtapaImpugnativa" ? (
+        <EtapaImpugnativaForm
+          idExpediente={idExpedienteSeleccionado}
+          onSave={handleSaveEtapaImpugnativa}
+          onCancel={() => setVista("listaEtapasDecisoria")} // Regresa sin cambios
+        />
+      ) : vista === "listaEtapasImpugnativa" ? (
+        <EtapaImpugnativaTabla
+          lista={etapasImpugnativas}
+          onVolver={() => setVista("listaEtapasDecisoria")}
+          onEditar={(etapa) => setVista("formEtapaImpugnativa")}
+          onEliminar={(id) => console.log("Eliminar impugnación id:", id)}
         />
       ) : vista === "listaExpedientes" ? (
         <ExpedientesTabla
