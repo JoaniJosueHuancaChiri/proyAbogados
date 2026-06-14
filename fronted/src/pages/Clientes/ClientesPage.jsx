@@ -8,6 +8,8 @@ import EtapaEscritaTabla from "./EtapaEscritaTabla";
 // etapa oral
 import EtapaOralForm from "./EtapaOralForm";
 import EtapaOralTabla from "./EtapaOralTabla";
+import EtapaDecisoriaForm from "./EtapaDecisoriaForm";
+import EtapaDecisoriaTabla from "./EtapaDecisoriaTabla";
 // ----------------------------
 import Swal from "sweetalert2";
 import axios from "axios";
@@ -40,7 +42,7 @@ const ClientesPage = () => {
   const [etapasEscritas, setEtapasEscritas] = useState([]); // Para guardar las etapas del expediente
   const [etapaViendo, setEtapaViendo] = useState(null); // Para el modal de ver
   const [etapasOrales, setEtapasOrales] = useState([]);
-
+  const [etapasDecisorias, setEtapasDecisorias] = useState([]);
   // 1. CARGAR LISTA DE CLIENTES DESDE EL BACKEND (Misma lógica que Abogados)
   const obtenerClientes = async () => {
     try {
@@ -254,6 +256,45 @@ const ClientesPage = () => {
       Swal.fire("Error", "No se pudo guardar la etapa oral", "error");
     }
   };
+  // ⚖️ 3ra Etapa: Decisoria (Sentencia)
+  const obtenerEtapasDecisorias = async (idExpediente) => {
+    try {
+      const respuesta = await axios.get(
+        `http://localhost:8080/api/etapas/decisoria/${idExpediente}`,
+      );
+      if (respuesta.data.ok) {
+        // Al igual que en la oral, si viene un objeto lo metemos en un array [datos] para la tabla
+        setEtapasDecisorias(respuesta.data.datos ? [respuesta.data.datos] : []);
+        setVista("listaEtapasDecisoria");
+      }
+    } catch (error) {
+      console.error("Error al obtener etapa decisoria:", error);
+      Swal.fire(
+        "Error",
+        "No se pudo cargar la resolución de la etapa decisoria",
+        "error",
+      );
+    }
+  };
+
+  const handleSaveEtapaDecisoria = async (formData) => {
+    try {
+      await axios.post("http://localhost:8080/api/etapas/decisoria", formData, {
+        headers: { "Content-Type": "multipart/form-data" }, // 🌟 Crucial para que viaje el PDF de la sentencia
+      });
+      Swal.fire(
+        "Éxito",
+        "Resolución de sentencia guardada correctamente",
+        "success",
+      );
+      obtenerEtapasDecisorias(idExpedienteSeleccionado);
+      // Una vez guardado, lo lógico es regresar al historial de etapas orales o expedientes
+      setVista("listaEtapasDecisoria");
+    } catch (error) {
+      console.error("Error al guardar etapa decisoria:", error);
+      Swal.fire("Error", "No se pudo guardar la etapa decisoria", "error");
+    }
+  };
 
   return (
     <>
@@ -307,6 +348,30 @@ const ClientesPage = () => {
           onVolver={() => setVista("listaEtapas")}
           onEditar={(etapa) => setVista("formEtapaOral")}
           onEliminar={(id) => console.log("Eliminar")}
+          onCrearEtapaOral={(etapa) => {
+            setIdExpedienteSeleccionado(etapa.idexpediente);
+            setVista("formEtapaDecisoria");
+          }}
+          onListarEtapaOral={(etapa) => {
+            setIdExpedienteSeleccionado(etapa.idexpediente);
+            obtenerEtapasDecisorias(etapa.idexpediente);
+            setVista("listaEtapasDecisoria");
+          }}
+        />
+      ) : vista === "formEtapaDecisoria" ? (
+        <EtapaDecisoriaForm
+        idExpediente={idExpedienteSeleccionado}
+        onSave={handleSaveEtapaDecisoria}
+        // Si quieres que al cancelar vaya a la tabla de sentencias:
+        onCancel={() => setVista("listaEtapasDecisoria")} 
+        />
+      ) : // 🌟 NUEVO BLOQUE: Manejo de la tabla de la 3ra Etapa (Sentencia)
+      vista === "listaEtapasDecisoria" ? (
+        <EtapaDecisoriaTabla
+          lista={etapasDecisorias} // Tu estado que guarda la respuesta de obtenerEtapasDecisorias
+          onVolver={() => setVista("listaEtapasOral")}
+          onEditar={(etapa) => setVista("formEtapaDecisoria")}
+          onEliminar={(id) => console.log("Eliminar sentencia:", id)}
         />
       ) : vista === "listaExpedientes" ? (
         <ExpedientesTabla
@@ -357,36 +422,40 @@ const ClientesPage = () => {
           }}
         />
       ) : vista === "formExpediente" ? (
-  <ExpedienteForm
-    idCliente={idClienteSeleccionado}
-    expedienteData={expedienteEditando}
-    onCancel={() => {
-      setExpedienteEditando(null);
-      setVista("listaExpedientes"); // Corregido: regresa a la lista, no a la tabla principal
-    }}
-    onSave={async (nuevoExp) => {
-      try {
-        if (expedienteEditando) {
-          await apiActualizarExpediente(
-            expedienteEditando.idexpediente || expedienteEditando.idExpediente,
-            nuevoExp
-          );
-          Swal.fire("Expedientes", "Actualizado correctamente.", "success");
-        } else {
-          await apiCrearExpediente(nuevoExp);
-          Swal.fire("Expedientes", "Creado correctamente.", "success");
-        }
-        const data = await apiGetExpedientes();
-        setExpedientes(data);
-        setExpedienteEditando(null);
-        setVista("listaExpedientes");
-      } catch (error) {
-        console.error("Error guardando expediente:", error);
-        Swal.fire("Error", "No se pudo guardar expediente.", "error");
-      }
-    }}
-  />
-
+        <ExpedienteForm
+          idCliente={idClienteSeleccionado}
+          expedienteData={expedienteEditando}
+          onCancel={() => {
+            setExpedienteEditando(null);
+            setVista("listaExpedientes"); // Corregido: regresa a la lista, no a la tabla principal
+          }}
+          onSave={async (nuevoExp) => {
+            try {
+              if (expedienteEditando) {
+                await apiActualizarExpediente(
+                  expedienteEditando.idexpediente ||
+                    expedienteEditando.idExpediente,
+                  nuevoExp,
+                );
+                Swal.fire(
+                  "Expedientes",
+                  "Actualizado correctamente.",
+                  "success",
+                );
+              } else {
+                await apiCrearExpediente(nuevoExp);
+                Swal.fire("Expedientes", "Creado correctamente.", "success");
+              }
+              const data = await apiGetExpedientes();
+              setExpedientes(data);
+              setExpedienteEditando(null);
+              setVista("listaExpedientes");
+            } catch (error) {
+              console.error("Error guardando expediente:", error);
+              Swal.fire("Error", "No se pudo guardar expediente.", "error");
+            }
+          }}
+        />
       ) : vista === "listaEtapas" ? (
         <EtapaEscritaTabla
           lista={etapasEscritas}

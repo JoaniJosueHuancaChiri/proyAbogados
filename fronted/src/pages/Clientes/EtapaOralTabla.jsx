@@ -1,6 +1,6 @@
 import React from "react";
 
-const EtapaOralTabla = ({ lista, onVolver, onEditar, onEliminar }) => {
+const EtapaOralTabla = ({ lista, onVolver, onEditar, onEliminar,onCrearEtapaOral,onListarEtapaOral }) => {
   const URL_BACKEND = "http://localhost:8080/";
 
   // Componente reutilizable para renderizar el enlace al PDF
@@ -75,6 +75,12 @@ const EtapaOralTabla = ({ lista, onVolver, onEditar, onEliminar }) => {
                         onClick={() => onEliminar(etapa.idexpediente)}
                       >
                         <i className="bi bi-trash"></i>
+                      </button>
+                      <button className="btn btn-sm btn-primary" title="Crear Etapa Oral" onClick={() => onCrearEtapaOral(etapa)}>
+                        <i className="bi bi-plus-circle me-1"></i> Etapa Decisoria
+                      </button>
+                      <button className="btn btn-sm btn-secondary" title="Historial Etapa Oral" onClick={() => onListarEtapaOral(etapa)}>
+                        <i className="bi bi-list-task me-1"></i> Listar
                       </button>
                     </div>
                   </td>
