@@ -3,7 +3,6 @@ import React from "react";
 const EtapaOralTabla = ({ lista, onVolver, onEditar, onEliminar,onCrearEtapaOral,onListarEtapaOral }) => {
   const URL_BACKEND = "http://localhost:8080/";
 
-  // Componente reutilizable para renderizar el enlace al PDF
   const PdfLink = ({ ruta, label }) => (
     <td>
       {ruta ? (
@@ -53,7 +52,6 @@ const EtapaOralTabla = ({ lista, onVolver, onEditar, onEliminar,onCrearEtapaOral
                 <tr key={etapa.idexpediente}>
                   <td className="fw-bold text-secondary">#{etapa.idexpediente}</td>
                   
-                  {/* Filas de archivos */}
                   <PdfLink ruta={etapa.ratificacionDemanda} label="Ratificación" />
                   <PdfLink ruta={etapa.tentativaConciliacion} label="Conciliación" />
                   <PdfLink ruta={etapa.saneamientoProcesal} label="Saneamiento" />

@@ -49,7 +49,6 @@ const EtapaOralForm = ({ idExpediente, onSave, onCancel }) => {
 
     data.append("idexpediente", idExpediente);
 
-    // Homologamos la lógica: solo agregar si el archivo existe
     if (archivos.ratificacionDemanda)
       data.append("ratificacionDemanda", archivos.ratificacionDemanda);
     if (archivos.tentativaConciliacion)

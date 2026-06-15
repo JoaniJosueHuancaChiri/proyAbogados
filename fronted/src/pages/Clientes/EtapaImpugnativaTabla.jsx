@@ -8,7 +8,6 @@ const EtapaImpugnativaTabla = ({
 }) => {
   const URL_BACKEND = "http://localhost:8080/";
 
-  // Componente reutilizable para renderizar el enlace al PDF de la Impugnación
   const PdfLink = ({ ruta, label }) => (
     <td>
       {ruta ? (
@@ -54,7 +53,6 @@ const EtapaImpugnativaTabla = ({
                 <tr key={etapa.idexpediente}>
                   <td className="fw-bold text-secondary">#{etapa.idexpediente}</td>
                   
-                  {/* ⚠️ Mapeamos con 'recursos' respetando estrictamente el campo de tu BD */}
                   <PdfLink ruta={etapa.recursos} label="Recurso de Apelación" />
 
                   <td>

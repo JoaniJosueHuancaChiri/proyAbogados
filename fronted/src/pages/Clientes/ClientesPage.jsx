@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from "react";
 import ClientesTabla from "./ClientesTabla";
 import ClienteForm from "./ClienteForm";
+
 import ExpedienteForm from "./ExpedienteForm";
 import ExpedientesTabla from "./ExpedientesTabla";
 import EtapaEscritaForm from "./EtapaEscritaForm";
 import EtapaEscritaTabla from "./EtapaEscritaTabla";
-// etapa oral
+
 import EtapaOralForm from "./EtapaOralForm";
 import EtapaOralTabla from "./EtapaOralTabla";
+
 import EtapaDecisoriaForm from "./EtapaDecisoriaForm";
 import EtapaDecisoriaTabla from "./EtapaDecisoriaTabla";
-// etapa impugnativa
+
 import EtapaImpugnativaForm from "./EtapaImpugnativaForm";
 import EtapaImpugnativaTabla from "./EtapaImpugnativaTabla";
-// ----------------------------
+
 import Swal from "sweetalert2";
 import axios from "axios";
 import {
@@ -40,14 +42,11 @@ const ClientesPage = () => {
   const [idExpedienteSeleccionado, setIdExpedienteSeleccionado] =
     useState(null);
 
-  // listar etapa 1
-  // ... dentro de tu componente ClientesPage
-  const [etapasEscritas, setEtapasEscritas] = useState([]); // Para guardar las etapas del expediente
-  const [etapaViendo, setEtapaViendo] = useState(null); // Para el modal de ver
+  const [etapasEscritas, setEtapasEscritas] = useState([]); 
+  const [etapaViendo, setEtapaViendo] = useState(null); 
   const [etapasOrales, setEtapasOrales] = useState([]);
   const [etapasDecisorias, setEtapasDecisorias] = useState([]);
   const [etapasImpugnativas, setEtapasImpugnativas] = useState([]);
-  // 1. CARGAR LISTA DE CLIENTES DESDE EL BACKEND (Misma lógica que Abogados)
   const obtenerClientes = async () => {
     try {
       setLoading(true);
@@ -63,10 +62,8 @@ const ClientesPage = () => {
     }
   };
 
-  // Ejecutamos la carga inicial al montar el componente
   useEffect(() => {
     obtenerClientes();
-    // Cargar expedientes al montar
     (async () => {
       try {
         const data = await apiGetExpedientes();
@@ -77,7 +74,6 @@ const ClientesPage = () => {
     })();
   }, []);
 
-  // 💾 2. FUNCIÓN PARA GUARDAR (CREAR O EDITAR EN BD - Calcado de Abogados)
   const handleSaveCliente = async (nuevoCliente) => {
     try {
       if (clienteEditando) {
@@ -93,7 +89,6 @@ const ClientesPage = () => {
           confirmButtonColor: "#009688",
         });
       } else {
-        // 📥 MODO REGISTRO (POST /api/usuarios -> Tu ruta base global)
         const respuesta = await axios.post(
           "http://localhost:8080/api/usuarios",
           nuevoCliente,
@@ -106,7 +101,6 @@ const ClientesPage = () => {
         });
       }
 
-      // Refrescamos la lista directamente desde el servidor
       obtenerClientes();
       setFormularioAbierto(false);
       setClienteEditando(null);
@@ -123,7 +117,6 @@ const ClientesPage = () => {
     }
   };
 
-  // 🗑️ 3. FUNCIÓN PARA ELIMINAR (DELETE /api/usuarios/:id?tipo=Cliente)
   const handleDeleteCliente = (cli) => {
     Swal.fire({
       title: "¿Eliminar Cliente?",
@@ -136,7 +129,6 @@ const ClientesPage = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          // Invocamos la ruta unificada pasando el id y el tipo=Cliente
           await axios.delete(
             `http://localhost:8080/api/usuarios/${cli.idUsuario}?tipo=Cliente`,
           );
@@ -146,7 +138,7 @@ const ClientesPage = () => {
             "El cliente ha sido eliminado correctamente.",
             "success",
           );
-          obtenerClientes(); // Recargamos la lista limpia
+          obtenerClientes();
         } catch (error) {
           console.error("Error al eliminar cliente:", error);
           Swal.fire(
@@ -159,20 +151,16 @@ const ClientesPage = () => {
     });
   };
 
-  // 🔍 1. CORRECCIÓN: Obtener la Etapa Escrita de la BD con la URL unificada
   const obtenerEtapasEscritas = async (idExpediente) => {
     try {
-      // 🌟 Ajustamos la ruta para que coincida con el backend (/api/etapas/escrita/:id)
       const respuesta = await axios.get(
         `http://localhost:8080/api/etapas/escrita/${idExpediente}`,
       );
 
       if (respuesta.data.ok && respuesta.data.datos) {
-        // Ponemos el objeto de la etapa dentro de un array para que la Tabla lo recorra sin problemas
         setEtapasEscritas([respuesta.data.datos]);
         setVista("listaEtapas");
       } else {
-        // Si el backend responde ok pero datos es null, significa que no hay registros aún
         setEtapasEscritas([]);
         setVista("listaEtapas");
         Swal.fire(
@@ -191,12 +179,10 @@ const ClientesPage = () => {
     }
   };
 
-  // 💾 2. NUEVA FUNCIÓN: Guardar o actualizar la Etapa Escrita (PDFs) en el Servidor
   const handleSaveEtapaEscrita = async (formDataDeReact) => {
     console.log("Enviando archivos multipartes al Backend...");
 
     try {
-      // Mandamos el FormData directo con su cabecera binaria
       const respuesta = await axios.post(
         "http://localhost:8080/api/etapas/escrita",
         formDataDeReact,
@@ -215,11 +201,10 @@ const ClientesPage = () => {
           confirmButtonColor: "#009688",
         });
 
-        // Refrescamos la tabla con los nuevos datos guardados
         if (idExpedienteSeleccionado) {
           obtenerEtapasEscritas(idExpedienteSeleccionado);
         } else {
-          setVista("expedientes"); // Si no hay id seleccionado, volvemos a la lista de expedientes
+          setVista("expedientes");
         }
       }
     } catch (error) {
@@ -260,14 +245,12 @@ const ClientesPage = () => {
       Swal.fire("Error", "No se pudo guardar la etapa oral", "error");
     }
   };
-  // ⚖️ 3ra Etapa: Decisoria (Sentencia)
   const obtenerEtapasDecisorias = async (idExpediente) => {
     try {
       const respuesta = await axios.get(
         `http://localhost:8080/api/etapas/decisoria/${idExpediente}`,
       );
       if (respuesta.data.ok) {
-        // Al igual que en la oral, si viene un objeto lo metemos en un array [datos] para la tabla
         setEtapasDecisorias(respuesta.data.datos ? [respuesta.data.datos] : []);
         setVista("listaEtapasDecisoria");
       }
@@ -300,14 +283,12 @@ const ClientesPage = () => {
     }
   };
 
-  // 4ta Etapa: Impugnativa (Apelaciones y Recursos)
   const obtenerEtapasImpugnativas = async (idExpediente) => {
     try {
       const respuesta = await axios.get(
         `http://localhost:8080/api/etapas/impugnativa/${idExpediente}`,
       );
       if (respuesta.data.ok) {
-        // Homologamos guardando en un array [datos] para que las estructuras iteren limpio
         setEtapasImpugnativas(
           respuesta.data.datos ? [respuesta.data.datos] : [],
         );
@@ -329,7 +310,7 @@ const ClientesPage = () => {
         "http://localhost:8080/api/etapas/impugnativa",
         formData,
         {
-          headers: { "Content-Type": "multipart/form-data" }, // Crucial para los archivos de impugnación
+          headers: { "Content-Type": "multipart/form-data" }, 
         },
       );
       Swal.fire(
@@ -338,7 +319,6 @@ const ClientesPage = () => {
         "success",
       );
 
-      // Una vez guardado, actualizamos datos y regresamos a la tabla de control decisorio
       obtenerEtapasDecisorias(idExpedienteSeleccionado);
       setVista("listaEtapasDecisoria");
     } catch (error) {
@@ -384,10 +364,10 @@ const ClientesPage = () => {
       ) : vista === "formEtapa" ? (
         <EtapaEscritaForm
           idExpediente={idExpedienteSeleccionado}
-          onSave={handleSaveEtapaEscrita} // 🌟 CORREGIDO: Ahora sí se comunica de verdad con Axios y tu Backend
+          onSave={handleSaveEtapaEscrita} 
           onCancel={() => setVista("listaExpedientes")}
         />
-      ) : vista === "formEtapaOral" ? ( // etapa oral
+      ) : vista === "formEtapaOral" ? (
         <EtapaOralForm
           idExpediente={idExpedienteSeleccionado}
           onSave={handleSaveEtapaOral}
@@ -413,31 +393,29 @@ const ClientesPage = () => {
         <EtapaDecisoriaForm
           idExpediente={idExpedienteSeleccionado}
           onSave={handleSaveEtapaDecisoria}
-          // Si quieres que al cancelar vaya a la tabla de sentencias:
           onCancel={() => setVista("listaEtapasOral")}
         />
-      ) : // NUEVO BLOQUE: Manejo de la tabla de la 3ra Etapa (Sentencia)
+      ) : 
       vista === "listaEtapasDecisoria" ? (
         <EtapaDecisoriaTabla
-          lista={etapasDecisorias} // Tu estado que guarda la respuesta de obtenerEtapasDecisorias
+          lista={etapasDecisorias} 
           onVolver={() => setVista("listaEtapasOral")}
           onEditar={(etapa) => setVista("formEtapaDecisoria")}
           onEliminar={(id) => console.log("Eliminar sentencia:", id)}
-          //  ENLACE DE BOTONES CLAVE:
           onCrearEtapaInpugnativa={(etapa) => {
             setIdExpedienteSeleccionado(etapa.idexpediente);
-            setVista("formEtapaImpugnativa"); // Cambia al formulario de subida
+            setVista("formEtapaImpugnativa"); 
           }}
           onListarEtapaInpugnativa={(etapa) => {
             setIdExpedienteSeleccionado(etapa.idexpediente);
-            obtenerEtapasImpugnativas(etapa.idexpediente); // Carga y cambia a vista historial
+            obtenerEtapasImpugnativas(etapa.idexpediente);
           }}
         />
       ) : vista === "formEtapaImpugnativa" ? (
         <EtapaImpugnativaForm
           idExpediente={idExpedienteSeleccionado}
           onSave={handleSaveEtapaImpugnativa}
-          onCancel={() => setVista("listaEtapasDecisoria")} // Regresa sin cambios
+          onCancel={() => setVista("listaEtapasDecisoria")}
         />
       ) : vista === "listaEtapasImpugnativa" ? (
         <EtapaImpugnativaTabla
@@ -491,7 +469,7 @@ const ClientesPage = () => {
           }}
           onListarEtapa={(exp) => {
             setIdExpedienteSeleccionado(exp.idexpediente || exp.idExpediente);
-            obtenerEtapasEscritas(exp.idexpediente || exp.idExpediente); // Llama a la nueva función
+            obtenerEtapasEscritas(exp.idexpediente || exp.idExpediente); 
           }}
         />
       ) : vista === "formExpediente" ? (
@@ -500,7 +478,7 @@ const ClientesPage = () => {
           expedienteData={expedienteEditando}
           onCancel={() => {
             setExpedienteEditando(null);
-            setVista("listaExpedientes"); // Corregido: regresa a la lista, no a la tabla principal
+            setVista("listaExpedientes");
           }}
           onSave={async (nuevoExp) => {
             try {
@@ -544,12 +522,12 @@ const ClientesPage = () => {
           }
           onCrearEtapaOral={(etapa) => {
             setIdExpedienteSeleccionado(etapa.idexpediente);
-            setVista("formEtapaOral"); // Cambia a la vista del formulario
+            setVista("formEtapaOral");
           }}
           onListarEtapaOral={(etapa) => {
             setIdExpedienteSeleccionado(etapa.idexpediente);
-            obtenerEtapasOrales(etapa.idexpediente); // Lógica de carga
-            setVista("listaEtapasOral"); // Cambia a la vista de la tabla
+            obtenerEtapasOrales(etapa.idexpediente);
+            setVista("listaEtapasOral");
           }}
         />
       ) : (
@@ -572,7 +550,6 @@ const ClientesPage = () => {
         />
       )}
 
-      {/* Modal de Visualización */}
       {clienteViendo && (
         <div
           className="modal d-block"
@@ -616,7 +593,6 @@ const ClientesPage = () => {
         </div>
       )}
 
-      {/* Modal para expediente */}
       {expedienteViendo && (
         <div
           className="modal d-block"

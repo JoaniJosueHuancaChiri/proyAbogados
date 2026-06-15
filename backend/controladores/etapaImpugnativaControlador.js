@@ -1,6 +1,5 @@
 import { obtenerEtapaImpugnativaPorExpediente, guardarEtapaImpugnativa } from "../modelos/etapaImpugnativaModelo.js";
 
-// Registrar o actualizar los datos de la etapa
 export const registrarOActualizarEtapaImpugnativa = async (req, res) => {
   const { idexpediente } = req.body;
   if (!idexpediente) return res.status(400).json({ ok: false, mensaje: "ID de expediente requerido" });
@@ -18,7 +17,6 @@ export const registrarOActualizarEtapaImpugnativa = async (req, res) => {
   }
 };
 
-// Buscar datos actuales de la etapa para renderizar en la tabla/formulario
 export const buscarEtapaImpugnativaPorExpediente = async (req, res) => {
   const { idexpediente } = req.params;
   try {

@@ -41,7 +41,6 @@ const EtapaImpugnativaForm = ({ idExpediente, onSave, onCancel }) => {
 
     data.append("idexpediente", idExpediente);
 
-    // Homologamos la lógica: solo agregar si el archivo existe
     if (archivos.recursos) {
       data.append("recursos", archivos.recursos);
     }
@@ -54,7 +53,6 @@ const EtapaImpugnativaForm = ({ idExpediente, onSave, onCancel }) => {
     onSave(data);
   };
 
-  // Sub-componente interno fiel a tu lógica visual
   const FileSection = ({ title, name, currentFile, rutaGuardada }) => (
     <div className="mb-4 p-3 border rounded bg-light">
       <div className="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">

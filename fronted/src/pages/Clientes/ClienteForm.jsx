@@ -53,7 +53,6 @@ const ClienteForm = ({ clienteData, onSave, onCancel }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Estructuramos el objeto final para el Backend
     const datosFinales = {
       ...formData,
       tipoUsuario: "Cliente", 
@@ -61,11 +60,8 @@ const ClienteForm = ({ clienteData, onSave, onCancel }) => {
 
    
     if (!clienteData) {
-      // Si no digitan contraseña, el sistema le asigna automáticamente su CI sin espacios
       datosFinales.password = formData.password.trim() || formData.ci.trim();
     } else {
-      // Si estamos editando y no se digitó nada en password, eliminamos la propiedad 
-      // para que el backend no sobreescriba o limpie la clave actual en la BD
       if (!formData.password.trim()) {
         delete datosFinales.password;
       }
@@ -95,7 +91,6 @@ const ClienteForm = ({ clienteData, onSave, onCancel }) => {
       <div className="tile-body">
         <form onSubmit={handleSubmit}>
           <div className="row">
-            {/* Datos Personales */}
             <div className="mb-3 col-md-4">
               <label className="form-label fw-semibold">Nombre</label>
               <input type="text" className="form-control" name="nombre" value={formData.nombre} onChange={handleChange} required />
@@ -133,7 +128,6 @@ const ClienteForm = ({ clienteData, onSave, onCancel }) => {
               </select>
             </div>
 
-            {/* Datos de Contacto y Especificaciones de Cliente */}
             <div className="mb-3 col-md-6">
               <label className="form-label fw-semibold">Celular</label>
               <input type="tel" className="form-control" name="celular" value={formData.celular} onChange={handleChange} required />
@@ -145,7 +139,6 @@ const ClienteForm = ({ clienteData, onSave, onCancel }) => {
             
             <div className="mb-3 col-md-6">
               <label className="form-label fw-semibold">Estado Civil</label>
-              {/* 🌟 SELECT SINCRONIZADO: Acorde al ENUM estricto de tu MariaDB */}
               <select className="form-control form-select" name="estadoCivil" value={formData.estadoCivil} onChange={handleChange} required>
                 <option value="">Seleccione...</option>
                 <option value="Soltero/a">Soltero/a</option>
@@ -167,7 +160,6 @@ const ClienteForm = ({ clienteData, onSave, onCancel }) => {
               </select>
             </div>
 
-            {/* 🌟 CASILLA DE CONTRASEÑA: Corregida para reaccionar sólo ante !clienteData */}
             {!clienteData && (
               <div className="mb-3 col-md-6">
                 <label className="form-label fw-semibold">Contraseña Opcional <span className="text-muted" style={{fontSize: '12px'}}>(Por defecto será su CI)</span></label>

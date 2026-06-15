@@ -2,10 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const EtapaDecisoriaForm = ({ idExpediente, onSave, onCancel }) => {
-  // 🌟 Solo manejamos un estado para el archivo nuevo cargado
   const [archivoSentencia, setArchivoSentencia] = useState(null);
 
-  // 🌟 Estado para almacenar la ruta si ya existía una sentencia previa en la BD
   const [pdfExistente, setPdfExistente] = useState(null);
 
   useEffect(() => {
@@ -13,7 +11,6 @@ const EtapaDecisoriaForm = ({ idExpediente, onSave, onCancel }) => {
       axios
         .get(`http://localhost:8080/api/etapas/decisoria/${idExpediente}`)
         .then((res) => {
-          // Capturamos el campo 'setencia' (sin la primera 'n') del objeto retornado
           if (res.data.ok && res.data.datos) {
             setPdfExistente(res.data.datos.setencia);
           }
@@ -38,10 +35,8 @@ const EtapaDecisoriaForm = ({ idExpediente, onSave, onCancel }) => {
     e.preventDefault();
     const data = new FormData();
 
-    // Regla de Oro de Multer: El idexpediente SIEMPRE al principio
     data.append("idexpediente", idExpediente);
 
-    // ⚠️ Importante: El nombre del campo debe ser 'sentencia' para que coincida con tu middleware .single('sentencia')
     if (archivoSentencia) {
       data.append("sentencia", archivoSentencia);
     }
@@ -68,7 +63,6 @@ const EtapaDecisoriaForm = ({ idExpediente, onSave, onCancel }) => {
           <div className="row justify-content-center">
             <div className="col-md-6">
               
-              {/* Sección única para la Sentencia */}
               <div className="mb-4 p-4 border rounded bg-light">
                 <div className="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
                   <h5 className="mb-0 text-dark fw-bold" style={{ fontSize: "1rem" }}>

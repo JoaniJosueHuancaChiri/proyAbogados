@@ -3,11 +3,9 @@ import cors from 'cors';
 import usuarioRutas from './rutas/usuarioRutas.js'; 
 import expedienteRutas from './rutas/expedienteRutas.js'; 
 import etapaEscritaRutas from './rutas/etapaEscritaRutas.js';
-// nuevo
 import etapaOralRutas from './rutas/etapaOralRutas.js';
 import etapaDecisoriaRutas from './rutas/etapaDecisoriaRutas.js';
 import etapaImpugnativaRutas from './rutas/etapaImpugnativaRutas.js';
-//--
 import path from 'path'; 
 import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
@@ -23,7 +21,6 @@ app.use('/etapas', express.static(path.join(__dirname, 'etapas')));
 app.use('/api/usuarios', usuarioRutas);
 app.use('/api/expedientes', expedienteRutas);
 app.use('/api/etapas/escrita', etapaEscritaRutas);
-// nuevo
 app.use('/api/etapas/oral', etapaOralRutas);
 app.use('/api/etapas/decisoria', etapaDecisoriaRutas);
 app.use('/api/etapas/impugnativa', etapaImpugnativaRutas);

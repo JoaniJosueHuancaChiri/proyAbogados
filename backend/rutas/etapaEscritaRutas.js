@@ -1,6 +1,6 @@
 import express from 'express';
 import { registrarOActualizarEtapa, buscarEtapaExpediente } from '../controladores/etapaEscritaControlador.js';
-import { cargarEtapaArchivos } from '../config/multerConfig.js'; // O donde guardaste Multer
+import { cargarEtapaArchivos } from '../config/multerConfig.js'; 
 
 const rutas = express.Router();
 

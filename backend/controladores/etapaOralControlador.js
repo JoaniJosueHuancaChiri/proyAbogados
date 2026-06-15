@@ -1,4 +1,3 @@
-//import * as oralModelo from "../modelos/etapaOralModelo.js";
 import { obtenerEtapaOralPorExpediente, guardarEtapaOral } from "../modelos/etapaOralModelo.js";
 
 export const registrarOActualizarEtapaOral = async (req, res) => {
@@ -29,7 +28,7 @@ export const buscarEtapaOralPorExpediente = async (req, res) => {
     const etapa = await obtenerEtapaOralPorExpediente(idexpediente);
     res.json({ ok: true, datos: etapa });
   } catch (error) {
-    console.error("ERROR REAL EN BD:", error); // <-- ESTO ES CLAVE
+    console.error("ERROR REAL EN BD:", error);
     res.status(500).json({ ok: false, mensaje: error.message });
   }
 };

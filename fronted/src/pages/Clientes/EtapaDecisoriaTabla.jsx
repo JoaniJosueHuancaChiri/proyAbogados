@@ -3,7 +3,6 @@ import React from "react";
 const EtapaDecisoriaTabla = ({ lista, onVolver, onEditar, onEliminar, onCrearEtapaInpugnativa, onListarEtapaInpugnativa }) => {
   const URL_BACKEND = "http://localhost:8080/";
 
-  // Componente reutilizable para renderizar el enlace al PDF de la Sentencia
   const PdfLink = ({ ruta, label }) => (
     <td>
       {ruta ? (
@@ -49,7 +48,6 @@ const EtapaDecisoriaTabla = ({ lista, onVolver, onEditar, onEliminar, onCrearEta
                 <tr key={etapa.idexpediente}>
                   <td className="fw-bold text-secondary">#{etapa.idexpediente}</td>
                   
-                  {/* ⚠️ Mapeamos con 'setencia' respetando la columna de la BD */}
                   <PdfLink ruta={etapa.setencia} label="Sentencia Definitiva" />
 
                   <td>

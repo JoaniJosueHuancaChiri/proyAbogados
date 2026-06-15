@@ -1,6 +1,5 @@
 import { pool } from "../config/bd.js";
 
-// Obtener el registro por expediente
 export const obtenerEtapaImpugnativaPorExpediente = async (idexpediente) => {
   try {
     const [resultado] = await pool.query(
@@ -13,7 +12,6 @@ export const obtenerEtapaImpugnativaPorExpediente = async (idexpediente) => {
   }
 };
 
-// Guardar o Actualizar el recurso
 export const guardarEtapaImpugnativa = async (idexpediente, rutasArchivos) => {
   const { recursos } = rutasArchivos;
   
@@ -27,8 +25,7 @@ export const guardarEtapaImpugnativa = async (idexpediente, rutasArchivos) => {
       `;
       await pool.query(sqlInsert, [idexpediente, recursos || null]);
     } else {
-      // Si ya existe y se subió un nuevo recurso, actualizamos de forma dinámica
-      if (!recursos) return true; // No hay cambios que guardar
+      if (!recursos) return true; 
 
       const sqlUpdate = `UPDATE etapaimpugnativa SET recursos = ? WHERE idexpediente = ?`;
       await pool.query(sqlUpdate, [recursos, idexpediente]);

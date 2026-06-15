@@ -6,7 +6,7 @@ export const obtenerEtapaPorExpediente = async (idexpediente) => {
       "SELECT * FROM etapaescrita WHERE idexpediente = ?",
       [idexpediente]
     );
-    return resultado[0] || null; // Retorna la fila o null si no se ha creado todavía
+    return resultado[0] || null; 
   } catch (error) {
     throw new Error("Error al obtener la etapa escrita: " + error.message);
   }
@@ -25,7 +25,6 @@ export const guardarEtapaEscrita = async (idexpediente, rutasArchivos) => {
       `;
       await pool.query(sqlInsert, [idexpediente, demanda || null, citacion || null, contestacion || null]);
     } else {
-      // 🔄 SI YA EXISTE (MODO EDICIÓN): Actualizamos dinámicamente solo los archivos que se subieron nuevos
       let sets = [];
       let parametros = [];
 

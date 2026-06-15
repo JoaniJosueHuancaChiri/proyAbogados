@@ -5,7 +5,6 @@ const ClientesTabla = ({ lista, onEditar, onEliminar, onView, onCrearExpediente,
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  // 1. Lógica de filtrado en tiempo real
   const listaFiltrada = lista.filter((cli) => {
     const termino = searchTerm.toLowerCase();
     return (
@@ -19,7 +18,6 @@ const ClientesTabla = ({ lista, onEditar, onEliminar, onView, onCrearExpediente,
     );
   });
 
-  // 2. Lógica de Paginación
   const totalEntries = listaFiltrada.length;
   const totalPages = Math.ceil(totalEntries / itemsPerPage) || 1;
   if (currentPage > totalPages && totalPages > 0) setCurrentPage(totalPages);
@@ -34,7 +32,6 @@ const ClientesTabla = ({ lista, onEditar, onEliminar, onView, onCrearExpediente,
   return (
     <div className="tile">
       <div className="tile-body">
-        {/* Barra de Búsqueda */}
         <div className="d-flex justify-content-end align-items-center mb-3">
           <label className="me-2 fw-semibold text-secondary mb-0" style={{ fontSize: "14px" }}>Buscar:</label>
           <input
@@ -47,7 +44,6 @@ const ClientesTabla = ({ lista, onEditar, onEliminar, onView, onCrearExpediente,
           />
         </div>
 
-        {/* Tabla de Datos */}
         <div className="table-responsive">
           <table className="table table-hover table-bordered align-middle m-0">
             <thead className="table-dark">
@@ -64,7 +60,6 @@ const ClientesTabla = ({ lista, onEditar, onEliminar, onView, onCrearExpediente,
             <tbody>
               {currentItems.length > 0 ? (
                 currentItems.map((cli) => (
-                  /* 🌟 CORREGIDO: Se usa idUsuario de MariaDB como key única */
                   <tr key={cli.idUsuario}>
                     <td className="fw-semibold">{cli.ci}</td>
                     <td>{`${cli.nombre || ""} ${cli.paterno || ""} ${cli.materno || ""}`}</td>
@@ -89,7 +84,6 @@ const ClientesTabla = ({ lista, onEditar, onEliminar, onView, onCrearExpediente,
                           <i className="bi bi-trash"></i>
                         </button>
                         
-                        {/* CORREGIDO: Se cambia cli.id por cli.idUsuario para los Expedientes */}
                         <button className="btn btn-success btn-sm" title="Crear Expediente" onClick={() => onCrearExpediente(cli.idUsuario)}>
                           <i className="bi bi-file-earmark-plus"></i>
                         </button>
@@ -109,7 +103,6 @@ const ClientesTabla = ({ lista, onEditar, onEliminar, onView, onCrearExpediente,
           </table>
         </div>
 
-        {/* Paginación de Registros */}
         <div className="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
           <div className="text-secondary" style={{ fontSize: "14px" }}>
             Mostrando {showingFrom} a {showingTo} de {totalEntries} registros
