@@ -58,7 +58,7 @@ const Sidebar = () => {
         user.tipoUsuario ? user.tipoUsuario.toUpperCase() : "SIN ROL",
       );
     }
-  }, [location.pathname]); 
+  }, [location.pathname]);
 
   return (
     <aside className="app-sidebar">
@@ -124,27 +124,27 @@ const Sidebar = () => {
             </li>
             <li>
               <NavLink
-                className={({ isActive }) =>
-                  isActive ? "app-menu__item active" : "app-menu__item"
-                }
-                to="/dashboard/expedientes"
+                className="app-menu__item"
+                to="/login"
+                onClick={() => {
+                  localStorage.clear();
+                }}
               >
-                <i className="app-menu__icon bi bi-folder"></i>
-                <span className="app-menu__label">Expedientes</span>
+                <i className="app-menu__icon bi bi-box-arrow-right"></i>
+                <span className="app-menu__label">Salir</span>
               </NavLink>
             </li>
           </>
         )}
         <li>
           <NavLink
-            className="app-menu__item"
-            to="/login"
-            onClick={() => {
-              localStorage.clear();
-            }}
+            className={({ isActive }) =>
+              isActive ? "app-menu__item active" : "app-menu__item"
+            }
+            to="/dashboard/expedientes"
           >
-            <i className="app-menu__icon bi bi-box-arrow-right"></i>
-            <span className="app-menu__label">Salir</span>
+            
+            <span className="app-menu__label"></span>
           </NavLink>
         </li>
       </ul>
