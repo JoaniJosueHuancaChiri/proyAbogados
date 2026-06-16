@@ -35,18 +35,37 @@ rutas.get('/dashboard/contadores', async (req, res) => {
     const [resClientes] = await pool.query('SELECT COUNT(*) AS total FROM cliente');
     const [resCasos] = await pool.query('SELECT COUNT(*) AS total FROM expediente');
 
+    // 2. NUEVAS CONSULTAS: Contadores individuales por estado del expediente
+    const [resActivos] = await pool.query('SELECT COUNT(*) AS total FROM expediente WHERE estado = "Activo"');
+    const [resSentencia] = await pool.query('SELECT COUNT(*) AS total FROM expediente WHERE estado = "Con Sentencia"');
+    const [resApelacion] = await pool.query('SELECT COUNT(*) AS total FROM expediente WHERE estado = "En Apelación"');
+    const [resArchivado] = await pool.query('SELECT COUNT(*) AS total FROM expediente WHERE estado = "Archivado"');
+
+
     const totalAbogados = resAbogados[0] ? resAbogados[0].total : 0;
     const totalClientes = resClientes[0] ? resClientes[0].total : 0;
     const totalCasos    = resCasos[0]    ? resCasos[0].total    : 0;
 
-    console.log("Contadores calculados con éxito:", { totalAbogados, totalClientes, totalCasos });
+    // Procesar valores de los estados particulares
+    const totalActivos    = resActivos[0]    ? resActivos[0].total    : 0;
+    const totalSentencia  = resSentencia[0]  ? resSentencia[0].total  : 0;
+    const totalApelacion  = resApelacion[0]  ? resApelacion[0].total  : 0;
+    const totalArchivado  = resArchivado[0]  ? resArchivado[0].total  : 0;
+
+    console.log("Contadores calculados con éxito:", { totalAbogados, totalClientes, totalCasos, estados: { totalActivos, totalSentencia, totalApelacion, totalArchivado } });
 
     res.json({
       ok: true,
       totales: {
         abogados: totalAbogados,
         clientes: totalClientes,
-        casosActivos: totalCasos
+        casosActivos: totalCasos,
+        estados: {
+          activo: totalActivos,
+          sentencia: totalSentencia,
+          apelacion: totalApelacion,
+          archivado: totalArchivado
+        }
       }
     });
   } catch (error) {
