@@ -16,7 +16,7 @@ router.get('/',(req,res)=>{
         data: usuarios
     })
 })
-//revisa esta parte esta interesante para definir rutas
+
 //la ruta seria http://localhost:8080/api/users/2
 router.get('/2',(req,res)=>{
     res.json({

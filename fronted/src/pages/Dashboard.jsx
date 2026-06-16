@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-// 1. IMPORTACIONES REQUERIDAS PARA EL CLIENTE Y GRÁFICAS
-import ExpedientesTabla from "./Clientes/ExpedientesTabla"; // 📂 Apuntamos a tu tabla existente
+
+import ExpedientesTabla from "./Clientes/ExpedientesTabla"; 
 import { getExpedientes as apiGetExpedientes } from "../api/expedientes";
 
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
@@ -21,7 +21,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [rolUsuario, setRolUsuario] = useState("USUARIO");
   
-  // 👤 Estados específicos para el flujo del Cliente
+  
   const [idLogueado, setIdLogueado] = useState(null);
   const [expedientesCliente, setExpedientesCliente] = useState([]);
   const [expedienteViendo, setExpedienteViendo] = useState(null);
@@ -35,7 +35,7 @@ const Dashboard = () => {
       const rol = user.tipoUsuario ? user.tipoUsuario.toUpperCase() : "SIN ROL";
       setRolUsuario(rol);
       
-      // 🚀 SI ES CLIENTE: Cargamos solo sus expedientes y frenamos el flujo administrativo
+      
       if (rol === "CLIENTE") {
         const idCliente = user.idUsuario;
         setIdLogueado(idCliente);
@@ -43,7 +43,7 @@ const Dashboard = () => {
         (async () => {
           try {
             const todosLosExpedientes = await apiGetExpedientes();
-            // Filtrar para que el cliente SOLO vea los suyos
+            
             const filtrados = todosLosExpedientes.filter(e => e.idCliente === idCliente);
             setExpedientesCliente(filtrados);
           } catch (err) {
@@ -56,7 +56,7 @@ const Dashboard = () => {
       }
     }
 
-    // ⚖️ SI ES ADMIN O ABOGADO: Consumo ordinario de contadores de control
+
     axios
       .get("http://localhost:8080/api/usuarios/dashboard/contadores", {
         headers: { Authorization: `Bearer ${token}` }
@@ -73,7 +73,8 @@ const Dashboard = () => {
       });
   }, []);
 
-  // CONFIGURACIÓN DE GRÁFICA (Para la vista de Administradores)
+  
+
   const dataGrafica = {
     labels: ["Activo", "Con Sentencia", "En Apelación", "Archivado"],
     datasets: [
@@ -92,12 +93,8 @@ const Dashboard = () => {
     ],
   };
 
-  // ==========================================
-  // 👤 CASO A: INTERFAZ EXCLUSIVA PARA EL CLIENTE
-  // ==========================================
-// ==========================================
-  // 👤 CASO A: INTERFAZ EXCLUSIVA PARA EL CLIENTE
-  // ==========================================
+
+
   if (rolUsuario === "CLIENTE") {
     return (
       <>
@@ -119,17 +116,16 @@ const Dashboard = () => {
         ) : (
           <div className="row">
             <div className="col-md-12">
-              {/* Activamos la bandera mágica para limpiar los botones */}
               <ExpedientesTabla
                 lista={expedientesCliente}
                 onVer={(exp) => setExpedienteViendo(exp)}
-                esCliente={true} // 🔥 ESTA LÍNEA LIMPIA TU INTERFAZ COMPLETAMENTE
+                esCliente={true} 
               />
             </div>
           </div>
         )}
 
-        {/* MODAL INFORMATIVO (Por si el cliente presiona el botón azul del Ojo) */}
+
         {expedienteViendo && (
           <div className="modal d-block" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
             <div className="modal-dialog modal-dialog-centered">
@@ -155,9 +151,8 @@ const Dashboard = () => {
     );
   }
 
-  // ==========================================
-  // ⚖️ CASO B: INTERFAZ ACTUAL PARA ADMIN / ABOGADO
-  // ==========================================
+
+
   return (
     <>
       <div className="app-title">
