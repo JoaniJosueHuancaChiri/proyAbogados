@@ -8,7 +8,7 @@ const ExpedientesTabla = ({
   onEliminar, 
   onCrearEtapa, 
   onListarEtapa,
-
+  esCliente = false // 🌟 Nueva prop con valor por defecto "false"
 }) => {
   
   const getBadgeClass = (estado) => {
@@ -25,21 +25,24 @@ const ExpedientesTabla = ({
     <div className="tile">
       <div className="tile-title d-flex justify-content-between align-items-center">
         <h4>Expedientes del Cliente</h4>
-        <button className="btn btn-secondary btn-sm" onClick={onVolver}>
-          <i className="bi bi-arrow-left"></i> Volver
-        </button>
+        {/* ❌ Ocultamos el botón Volver si es un Cliente */}
+        {!esCliente && onVolver && (
+          <button className="btn btn-secondary btn-sm" onClick={onVolver}>
+            <i className="bi bi-arrow-left"></i> Volver
+          </button>
+        )}
       </div>
       
       <div className="tile-body table-responsive">
         <table className="table table-hover table-bordered align-middle">
           <thead className="table-dark">
             <tr>
-              <th style={{ width: '10%' }}>NUREJ</th>
-              <th style={{ width: '12%' }}>Nro. Exp</th>
-              <th style={{ width: '18%' }}>Proceso</th>
-              <th style={{ width: '15%' }}>Juzgado</th>
+              <th style={{ width: '15%' }}>NUREJ</th>
+              <th style={{ width: '15%' }}>Nro. Exp</th>
+              <th style={{ width: '25%' }}>Proceso</th>
+              <th style={{ width: '20%' }}>Juzgado</th>
               <th style={{ width: '10%' }}>Estado</th>
-              <th style={{ width: '25%' }}>Acciones</th>
+              <th style={{ width: esCliente ? '15%' : '25%' }}>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -57,22 +60,28 @@ const ExpedientesTabla = ({
                   </td>
                   <td>
                     <div className="d-flex flex-wrap justify-content-center gap-1">
+                      {/* 👁️ El botón "Ver" siempre visible para todos */}
                       <button className="btn btn-primary btn-sm" title="Ver" onClick={() => onVer(exp)}>
                         <i className="bi bi-eye"></i>
                       </button>
-                      <button className="btn btn-info btn-sm text-white" title="Editar" onClick={() => onEditar(exp)}>
-                        <i className="bi bi-pencil-square"></i>
-                      </button>
-                      <button className="btn btn-success btn-sm" title="Crear Etapa Escrita" onClick={() => onCrearEtapa(exp)}>
-                        <i className="bi bi-file-earmark-plus"></i>
-                      </button>
-                      <button className="btn btn-warning btn-sm" title="Ver Etapas Escritas" onClick={() => onListarEtapa(exp)}>
-                        <i className="bi bi-list-check"></i>
-                      </button>
-                      
-                      <button className="btn btn-danger btn-sm" title="Eliminar" onClick={() => onEliminar(exp.idexpediente || exp.idExpediente)}>
-                        <i className="bi bi-trash"></i>
-                      </button>
+
+                      {/* 🔒 BOTONES EXCLUSIVOS DE ADMINISTRADOR / ABOGADO */}
+                      {!esCliente && (
+                        <>
+                          <button className="btn btn-info btn-sm text-white" title="Editar" onClick={() => onEditar(exp)}>
+                            <i className="bi bi-pencil-square"></i>
+                          </button>
+                          <button className="btn btn-success btn-sm" title="Crear Etapa Escrita" onClick={() => onCrearEtapa(exp)}>
+                            <i className="bi bi-file-earmark-plus"></i>
+                          </button>
+                          <button className="btn btn-warning btn-sm" title="Ver Etapas Escritas" onClick={() => onListarEtapa(exp)}>
+                            <i className="bi bi-list-check"></i>
+                          </button>
+                          <button className="btn btn-danger btn-sm" title="Eliminar" onClick={() => onEliminar(exp.idexpediente || exp.idExpediente)}>
+                            <i className="bi bi-trash"></i>
+                          </button>
+                        </>
+                      )}
                     </div>
                   </td>
                 </tr>

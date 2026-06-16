@@ -6,6 +6,7 @@ const Sidebar = () => {
   const location = useLocation();
   const [nombreCompleto, setNombreCompleto] = useState("Cargando...");
   const [rolUsuario, setRolUsuario] = useState("Usuario");
+
   const comprobarSesionUnica = async () => {
     const token = localStorage.getItem("token");
 
@@ -37,6 +38,7 @@ const Sidebar = () => {
       console.error("Error de conexión al verificar token:", error);
     }
   };
+
   useEffect(() => {
     comprobarSesionUnica();
 
@@ -72,6 +74,7 @@ const Sidebar = () => {
       </div>
 
       <ul className="app-menu">
+        {/* 1. DASHBOARD (Visible para todos los que entran al panel) */}
         <li>
           <NavLink
             className={({ isActive }) =>
@@ -85,6 +88,7 @@ const Sidebar = () => {
           </NavLink>
         </li>
 
+        {/* 2. ADMINISTRADOR (Solo Administradores) */}
         {rolUsuario === "ADMINISTRADOR" && (
           <li>
             <NavLink
@@ -98,6 +102,8 @@ const Sidebar = () => {
             </NavLink>
           </li>
         )}
+
+        {/* 3. VISTAS COMPARTIDAS (Administradores y Abogados) */}
         {(rolUsuario === "ADMINISTRADOR" || rolUsuario === "ABOGADO") && (
           <>
             <li>
@@ -124,27 +130,29 @@ const Sidebar = () => {
             </li>
             <li>
               <NavLink
-                className="app-menu__item"
-                to="/login"
-                onClick={() => {
-                  localStorage.clear();
-                }}
+                className={({ isActive }) =>
+                  isActive ? "app-menu__item active" : "app-menu__item"
+                }
+                to="/dashboard/expedientes"
               >
-                <i className="app-menu__icon bi bi-box-arrow-right"></i>
-                <span className="app-menu__label">Salir</span>
+                <i className="app-menu__icon bi bi-folder"></i> {/* 🌟 Añadido ícono de carpeta */}
+                <span className="app-menu__label">Expedientes</span>
               </NavLink>
             </li>
           </>
         )}
+
+        {/* 4. BOTÓN UNICO DE SALIR (Abajo del todo para mantener orden) */}
         <li>
           <NavLink
-            className={({ isActive }) =>
-              isActive ? "app-menu__item active" : "app-menu__item"
-            }
-            to="/dashboard/expedientes"
+            className="app-menu__item"
+            to="/login"
+            onClick={() => {
+              localStorage.clear();
+            }}
           >
-            
-            <span className="app-menu__label"></span>
+            <i className="app-menu__icon bi bi-box-arrow-right"></i>
+            <span className="app-menu__label">Salir</span>
           </NavLink>
         </li>
       </ul>
